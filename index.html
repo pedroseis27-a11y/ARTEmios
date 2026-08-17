@@ -385,6 +385,37 @@
   font-size: 13px;
   margin-top: 2px;
 }  
+    .art-card {
+  position: relative;
+}
+
+.art-card img {
+  cursor: zoom-in;
+  transition: transform 0.4s ease;
+}
+
+.art-card:hover img {
+  transform: scale(1.04);
+}
+   .view-art {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 253, 248, 0.92);
+  color: #756246;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: 0.3s ease;
+  pointer-events: none;
+}
+
+.art-card:hover .view-art {
+  opacity: 1;
+  transform: translateY(0);
+} 
   </style>
 </head>
 
@@ -451,6 +482,7 @@
       <div class="gallery">
 <article class="art-card"> 
       <img src="IMG_0821.jpg" alt="Obra 01" onclick="openImage(this.src)">
+  <div class="view-art">🔍 Ver obra</div>
           <div class="art-info">
            <h3>Flamenca</h3>
 <p>Por Pedro Mariscal Sánchez</p>
@@ -463,6 +495,7 @@
 
 <article class="art-card"> 
       <img src="IMG_0822.jpg" alt="Obra 02" onclick="openImage(this.src)">
+  <div class="view-art">🔍 Ver obra</div>
 
           <div class="art-info">
          <h3>Puerta de Antequera</h3>
@@ -476,6 +509,7 @@
 
 <article class="art-card"> 
     <img src="IMG_0824.jpg" alt="Obra 03" onclick="openImage(this.src)">
+  <div class="view-art">🔍 Ver obra</div>
 
           <div class="art-info">
            <h3>Antequera nocturna</h3>
@@ -489,6 +523,7 @@
 
 <article class="art-card"> 
    <img src="IMG_2007.PNG" alt="Obra 04" onclick="openImage(this.src)">
+  <div class="view-art">🔍 Ver obra</div>
 
           <div class="art-info">
           <h3>Romería hacia la Peña</h3>
@@ -501,6 +536,7 @@
         </article>
 <article class="art-card">
 <img src="IMG_2063.jpg" alt="Obra 05" onclick="openImage(this.src)">
+  <div class="view-art">🔍 Ver obra</div>
       <div class="art-info">
        <h3>Feria de Antequera</h3>
 <p>Por Pedro Mariscal Sánchez</p>
