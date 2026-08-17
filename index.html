@@ -31,7 +31,54 @@
       top: 0;
       z-index: 10;
     }
+.menu-button {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #756246;
+  cursor: pointer;
+  padding: 5px;
+}
+    .side-menu {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  background: #fffdf8;
+  box-shadow: 5px 0 25px rgba(70, 60, 45, 0.15);
+  padding: 80px 30px 30px;
+  z-index: 100;
+  transition: left 0.3s ease;
+}
 
+.side-menu.open {
+  left: 0;
+}
+
+.side-menu a {
+  display: block;
+  color: #5d5548;
+  text-decoration: none;
+  font-size: 19px;
+  padding: 16px 5px;
+  border-bottom: 1px solid #eee7dc;
+}
+
+.side-menu a:hover {
+  color: #9b8050;
+}
+
+.close-menu {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #756246;
+  cursor: pointer;
+}
     .logo {
       font-size: 28px;
       letter-spacing: 1px;
@@ -194,8 +241,16 @@
 </head>
 
 <body>
+<div id="sideMenu" class="side-menu">
+  <button class="close-menu" onclick="toggleMenu()">×</button>
 
+  <a href="#inicio" onclick="toggleMenu()">Inicio</a>
+  <a href="#galeria" onclick="toggleMenu()">Galería</a>
+  <a href="#sobre" onclick="toggleMenu()">Sobre mí</a>
+  <a href="#carrito" onclick="toggleMenu()">🛒 Carrito</a>
+</div>
   <header>
+    <button class="menu-button" onclick="toggleMenu()">☰</button>
     <div class="logo">ARTEmios</div>
 
     <nav>
@@ -316,6 +371,10 @@ Sobre mí
   <footer>
     © 2026 ARTEmios · Un espacio para el arte
   </footer>
-
+<script>
+  function toggleMenu() {
+    document.getElementById("sideMenu").classList.toggle("open");
+  }
+</script>
 </body>
 </html>
