@@ -51,6 +51,52 @@
   z-index: 100;
   transition: left 0.3s ease;
 }
+    .cart-panel {
+  position: fixed;
+  top: 0;
+  right: -380px;
+  width: 360px;
+  height: 100vh;
+  background: #fffdf8;
+  box-shadow: -5px 0 25px rgba(70, 60, 45, 0.15);
+  padding: 80px 30px 30px;
+  z-index: 200;
+  transition: right 0.3s ease;
+  overflow-y: auto;
+}
+
+.cart-panel.open {
+  right: 0;
+}
+
+.cart-panel h2 {
+  color: #756246;
+  margin-bottom: 25px;
+}
+
+#cartItems {
+  margin-bottom: 25px;
+}
+
+#cartItems p {
+  color: #8a8377;
+}
+
+#cartTotal {
+  font-size: 20px;
+  font-weight: bold;
+  color: #625541;
+  margin-bottom: 20px;
+}
+
+.cart-panel button {
+  border: none;
+  background: #756246;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 25px;
+  cursor: pointer;
+}
 
 .side-menu.open {
   left: 0;
@@ -247,7 +293,18 @@
   <a href="#inicio" onclick="toggleMenu()">Inicio</a>
   <a href="#galeria" onclick="toggleMenu()">Galería</a>
   <a href="#sobre" onclick="toggleMenu()">Sobre mí</a>
-  <a href="#carrito" onclick="toggleMenu()">🛒 Carrito</a>
+<a href="javascript:void(0)" onclick="openCart()">🛒 Carrito</a>
+  <div id="cartPanel" class="cart-panel">
+  <h2>Tu carrito</h2>
+
+  <div id="cartItems">
+    <p>Tu carrito está vacío.</p>
+  </div>
+
+  <p id="cartTotal">Total: 0 €</p>
+
+  <button onclick="closeCart()">Cerrar</button>
+</div>
 </div>
   <header>
     <button class="menu-button" onclick="toggleMenu()">☰</button>
@@ -385,6 +442,63 @@ Sobre mí
   function toggleMenu() {
     document.getElementById("sideMenu").classList.toggle("open");
   }
+</script>
+  <script>
+  function openCart() {
+    document.getElementById("cartPanel").classList.add("open");
+    document.getElementById("sideMenu").classList.remove("open");
+  }
+
+  function closeCart() {
+    document.getElementById("cartPanel").classList.remove("open");
+  }
+</script>
+  <script>
+  let cart = [];
+
+  function addToCart(name, price) {
+    cart.push({ name: name, price: price });
+    updateCart();
+    alert(name + " se ha añadido al carrito 🛒");
+  }
+
+function updateCart() {
+  const cartLink = document.querySelector('a[onclick="openCart()"]');
+  const cartItems = document.getElementById("cartItems");
+  const cartTotal = document.getElementById("cartTotal");
+
+  if (cartLink) {
+    cartLink.textContent = "🛒 Carrito (" + cart.length + ")";
+  }
+
+  if (cart.length === 0) {
+    cartItems.innerHTML = "<p>Tu carrito está vacío.</p>";
+    cartTotal.textContent = "Total: 0 €";
+    return;
+  }
+
+  let total = 0;
+  let html = "";
+
+  cart.forEach(function(item, index) {
+    total += item.price;
+
+    html += `
+      <div class="cart-item">
+        <span>${item.name} — ${item.price} €</span>
+        <button onclick="removeFromCart(${index})">×</button>
+      </div>
+    `;
+  });
+
+  cartItems.innerHTML = html;
+  cartTotal.textContent = "Total: " + total + " €";
+}
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  updateCart();
+}
 </script>
 </body>
 </html>
