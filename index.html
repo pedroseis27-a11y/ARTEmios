@@ -686,6 +686,113 @@
     padding: 30px;
   }
 } 
+    .order-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 700;
+  background: rgba(40, 35, 28, 0.88);
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+}
+
+.order-modal.open {
+  display: flex;
+}
+
+.order-box {
+  background: #fffdf8;
+  width: min(650px, 95%);
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 18px;
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.order-box h2 {
+  color: #756246;
+  font-size: 30px;
+  margin-bottom: 25px;
+}
+
+.order-summary {
+  background: #f5f0e6;
+  padding: 18px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+}
+
+.order-summary p {
+  color: #625541;
+  margin-bottom: 6px;
+}
+
+.order-total {
+  font-size: 20px;
+  font-weight: bold;
+  color: #756246;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #ded7ca;
+}
+
+.order-form label {
+  display: block;
+  color: #625541;
+  font-size: 14px;
+  margin-bottom: 6px;
+  margin-top: 15px;
+}
+
+.order-form input,
+.order-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ded7ca;
+  border-radius: 10px;
+  background: #fff;
+  color: #3f3a32;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+}
+
+.order-form textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.order-submit {
+  width: 100%;
+  border: none;
+  background: #756246;
+  color: white;
+  padding: 14px 22px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  margin-top: 25px;
+  transition: 0.25s;
+}
+
+.order-submit:hover {
+  background: #5e503b;
+  transform: translateY(-2px);
+}
+
+.close-order {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  border: none;
+  background: none;
+  color: #756246;
+  font-size: 32px;
+  cursor: pointer;
+}
   </style>
 </head>
 
@@ -717,6 +824,68 @@
       </button>
 
     </div>
+
+  </div>
+
+</div>
+  <div id="orderModal" class="order-modal">
+
+  <div class="order-box">
+
+    <button class="close-order" onclick="closeOrder()">×</button>
+
+    <h2>Finalizar pedido</h2>
+
+    <div class="order-summary">
+
+      <p><strong>Resumen del pedido</strong></p>
+
+      <div id="orderItems"></div>
+
+      <p id="orderTotal" class="order-total">
+        Total: 0 €
+      </p>
+
+    </div>
+
+    <form class="order-form" onsubmit="submitOrder(event)">
+
+      <label for="customerName">Nombre completo</label>
+      <input
+        type="text"
+        id="customerName"
+        required
+        placeholder="Tu nombre"
+      >
+
+      <label for="customerEmail">Correo electrónico</label>
+      <input
+        type="email"
+        id="customerEmail"
+        required
+        placeholder="tu@email.com"
+      >
+
+      <label for="customerPhone">Teléfono</label>
+      <input
+        type="tel"
+        id="customerPhone"
+        required
+        placeholder="600 000 000"
+      >
+
+      <label for="customerAddress">Dirección de envío</label>
+      <textarea
+        id="customerAddress"
+        required
+        placeholder="Calle, número, código postal, ciudad..."
+      ></textarea>
+
+      <button type="submit" class="order-submit">
+        Enviar pedido 🛍️
+      </button>
+
+    </form>
 
   </div>
 
@@ -1009,7 +1178,47 @@ function removeFromCart(index) {
   cart.splice(index, 1);
   updateCart();
 }
-    function buyCart() {
+   function buyCart() {
+  if (cart.length === 0) {
+    alert("Tu carrito está vacío 🛒");
+    return;
+  }
+
+  const orderItems = document.getElementById("orderItems");
+  const orderTotal = document.getElementById("orderTotal");
+
+  let total = 0;
+  let html = "";
+
+  cart.forEach(function(item) {
+    total += item.price;
+
+    html += `
+      <p>${item.name} — ${item.price} €</p>
+    `;
+  });
+
+  orderItems.innerHTML = html;
+  orderTotal.textContent = "Total: " + total + " €";
+
+  document.getElementById("cartPanel").classList.remove("open");
+  document.getElementById("orderModal").classList.add("open");
+}
+    function closeOrder() {
+  document.getElementById("orderModal").classList.remove("open");
+}
+    function submitOrder(event) {
+  event.preventDefault();
+
+  alert(
+    "¡Pedido recibido! 🎨💗\n\n" +
+    "Gracias por confiar en ARTEmios."
+  );
+
+  document.querySelector(".order-form").reset();
+
+  closeOrder();
+}
   if (cart.length === 0) {
     alert("Tu carrito está vacío 🛒");
     return;
