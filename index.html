@@ -334,10 +334,54 @@
         padding: 60px 5%;
       }
     }
+ 
+.image-modal {
+  display: none;
+  position: fixed;
+  z-index: 500;
+  inset: 0;
+  background: rgba(40, 35, 28, 0.88);
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+}
+
+.image-modal.open {
+  display: flex;
+}
+
+.image-modal img {
+  max-width: 90%;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.close-image {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 42px;
+  cursor: pointer;
+  z-index: 501;
+  transition: 0.2s;
+}
+
+.close-image:hover {
+  transform: scale(1.1);
+}
   </style>
 </head>
 
 <body>
+  <div id="imageModal" class="image-modal" onclick="closeImage()">
+  <button class="close-image" onclick="closeImage()">×</button>
+  <img id="modalImage" src="" alt="Obra ampliada" onclick="event.stopPropagation()">
+</div>
 <div id="sideMenu" class="side-menu">
   <button class="close-menu" onclick="toggleMenu()">×</button>
 
@@ -395,8 +439,7 @@
 
       <div class="gallery">
 <article class="art-card"> 
-       <img src="IMG_0821.jpg" alt="Obra 01"> 
-
+      <img src="IMG_0821.jpg" alt="Obra 01" onclick="openImage(this.src)">
           <div class="art-info">
             <h3>Obra 01</h3>
             <p>Por Pedro Mariscal Sánchez</p>
@@ -406,7 +449,7 @@
         </article>
 
 <article class="art-card"> 
-       <img src="IMG_0822.jpg" alt="Obra 02"> 
+      <img src="IMG_0822.jpg" alt="Obra 02" onclick="openImage(this.src)">
 
           <div class="art-info">
             <h3>Obra 02</h3>
@@ -417,7 +460,7 @@
         </article>
 
 <article class="art-card"> 
-      <img src="IMG_0824.jpg" alt="Obra 03"> 
+    <img src="IMG_0824.jpg" alt="Obra 03" onclick="openImage(this.src)">
 
           <div class="art-info">
             <h3>Obra 03</h3>
@@ -428,7 +471,7 @@
         </article>
 
 <article class="art-card"> 
-    <img src="IMG_2007.PNG" alt="Obra 04"> 
+   <img src="IMG_2007.PNG" alt="Obra 04" onclick="openImage(this.src)">
 
           <div class="art-info">
             <h3>Obra 04</h3>
@@ -438,7 +481,7 @@
           </div>
         </article>
 <article class="art-card">
-  <img src="IMG_2063.jpg" alt="Obra 05">
+<img src="IMG_2063.jpg" alt="Obra 05" onclick="openImage(this.src)">
       <div class="art-info">
         <h3>Obra 05</h3>
         <p>Por Pedro Mariscal Sánchez</p> 
@@ -561,5 +604,15 @@ function removeFromCart(index) {
   alert("¡Gracias por tu interés en mi arte! 🎨💗\n\nPróximamente podrás realizar el pago directamente desde aquí.");
 }
 </script>
+ <script>
+  function openImage(src) {
+    document.getElementById("modalImage").src = src;
+    document.getElementById("imageModal").classList.add("open");
+  }
+
+  function closeImage() {
+    document.getElementById("imageModal").classList.remove("open");
+  }
+</script> 
 </body>
 </html>
