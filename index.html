@@ -374,6 +374,100 @@
 .close-image:hover {
   transform: scale(1.1);
 }
+    .art-detail {
+  width: min(950px, 92vw);
+  max-height: 88vh;
+  background: #fffdf8;
+  border-radius: 18px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+}
+
+.art-detail-image {
+  width: 55%;
+  min-height: 500px;
+  background: #ebe4d7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+}
+
+.art-detail-image img {
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.art-detail-info {
+  width: 45%;
+  padding: 50px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.art-detail-info h2 {
+  color: #756246;
+  font-size: 38px;
+  margin-bottom: 10px;
+}
+
+.description {
+  color: #716b61;
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 25px 0;
+}
+
+.modal-price {
+  color: #625541;
+  font-size: 25px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.art-detail-info .add-cart {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 30px;
+  background: #756246;
+  color: white;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.art-detail-info .add-cart:hover {
+  background: #5e503b;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 700px) {
+  .art-detail {
+    flex-direction: column;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .art-detail-image {
+    width: 100%;
+    min-height: 300px;
+  }
+
+  .art-detail-info {
+    width: 100%;
+    padding: 30px;
+  }
+
+  .art-detail-info h2 {
+    font-size: 30px;
+  }
+}
   .technique {
   color: #756246;
   font-size: 14px;
@@ -438,13 +532,198 @@
     padding: 6px;
   }
 }
+   .art-detail {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  background: rgba(40, 35, 28, 0.88);
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+}
+
+.art-detail.open {
+  display: flex;
+}
+
+.art-detail-box {
+  background: #fffdf8;
+  width: min(900px, 95%);
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+}
+
+.art-detail-image {
+  background: #ebe4d7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+}
+
+.art-detail-image img {
+  width: 100%;
+  height: 500px;
+  object-fit: contain;
+}
+
+.art-detail-info {
+  padding: 45px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.art-detail-info h2 {
+  color: #756246;
+  font-size: 34px;
+  margin-bottom: 12px;
+}
+
+.art-detail-info .detail-technique {
+  color: #756246;
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+
+.art-detail-info .detail-date {
+  color: #9a9286;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+.art-detail-info .detail-description {
+  color: #716b61;
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+
+.art-detail-price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #625541;
+  margin-bottom: 20px;
+}
+
+.detail-cart-button {
+  border: none;
+  background: #756246;
+  color: white;
+  padding: 14px 22px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  transition: 0.25s;
+}
+
+.detail-cart-button:hover {
+  background: #5e503b;
+  transform: translateY(-2px);
+}
+
+.close-detail {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  border: none;
+  background: rgba(255,253,248,0.9);
+  color: #756246;
+  font-size: 32px;
+  cursor: pointer;
+  z-index: 601;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+}
+
+@media (max-width: 700px) {
+  .art-detail-box {
+    grid-template-columns: 1fr;
+  }
+
+  .art-detail-image,
+  .art-detail-image img {
+    height: 350px;
+    min-height: 350px;
+  }
+
+  .art-detail-info {
+    padding: 30px;
+  }
+} 
   </style>
 </head>
 
 <body>
-  <div id="imageModal" class="image-modal" onclick="closeImage()">
+  <div id="artDetail" class="art-detail" onclick="closeArtDetail()">
+
+  <div class="art-detail-box" onclick="event.stopPropagation()">
+
+    <button class="close-detail" onclick="closeArtDetail()">×</button>
+
+    <div class="art-detail-image">
+      <img id="detailImage" src="" alt="Obra">
+    </div>
+
+    <div class="art-detail-info">
+
+      <h2 id="detailTitle"></h2>
+
+      <p id="detailTechnique" class="detail-technique"></p>
+
+      <p id="detailDate" class="detail-date"></p>
+
+      <p id="detailDescription" class="detail-description"></p>
+
+      <p id="detailPrice" class="art-detail-price"></p>
+
+      <button id="detailCartButton" class="detail-cart-button">
+        Añadir al carrito 🛒
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+<div id="imageModal" class="image-modal" onclick="closeImage()">
+
   <button class="close-image" onclick="closeImage()">×</button>
-  <img id="modalImage" src="" alt="Obra ampliada" onclick="event.stopPropagation()">
+
+  <div class="art-detail" onclick="event.stopPropagation()">
+
+    <div class="art-detail-image">
+      <img id="modalImage" src="" alt="Obra ampliada">
+    </div>
+
+    <div class="art-detail-info">
+
+      <h2 id="modalTitle">Obra</h2>
+
+      <p id="modalTechnique" class="technique"></p>
+
+      <p id="modalDate" class="date"></p>
+
+      <p id="modalDescription" class="description"></p>
+
+      <p id="modalPrice" class="modal-price"></p>
+
+      <button id="modalCartButton" class="add-cart">
+        🛒 Añadir al carrito
+      </button>
+
+    </div>
+
+  </div>
+
 </div>
 <div id="sideMenu" class="side-menu">
   <button class="close-menu" onclick="toggleMenu()">×</button>
@@ -508,7 +787,7 @@
 
       <div class="gallery">
 <article class="art-card"> 
-      <img src="IMG_0821.jpg" alt="Obra 01" onclick="openImage(this.src)">
+     <img src="IMG_0821.jpg" alt="Flamenca" onclick="openArtDetail('Flamenca', this.src, 'Acrílico y óleo · 40 × 30 cm', '17/06/2025', 'Vívida representación del arte. Inspirada en Andalucía, con flujos de movimiento creados con óleo.', 150)">
   <div class="view-art">🔍 Ver obra</div>
           <div class="art-info">
            <h3>Flamenca</h3>
@@ -521,7 +800,7 @@
         </article>
 
 <article class="art-card"> 
-      <img src="IMG_0822.jpg" alt="Obra 02" onclick="openImage(this.src)">
+     <img src="IMG_0822.jpg" alt="Puerta de Antequera" onclick="openArtDetail('Puerta de Antequera', this.src, 'Acrílico · 30 × 21 cm', '19/05/2025', 'Representación de la vista de Antequera desde el arco hacia San Sebastián.', 30)">
   <div class="view-art">🔍 Ver obra</div>
 
           <div class="art-info">
@@ -535,7 +814,7 @@
         </article>
 
 <article class="art-card"> 
-    <img src="IMG_0824.jpg" alt="Obra 03" onclick="openImage(this.src)">
+   <img src="IMG_0824.jpg" alt="Antequera nocturna" onclick="openArtDetail('Antequera nocturna', this.src, 'Carboncillo y tinta · 30 × 21 cm', '10/07/2026', 'Representación gráfica de la vista de Antequera: monumentos, patrimonio y edificios desde la calle Estepa.', 20)">
   <div class="view-art">🔍 Ver obra</div>
 
           <div class="art-info">
@@ -549,7 +828,7 @@
         </article>
 
 <article class="art-card"> 
-   <img src="IMG_2007.PNG" alt="Obra 04" onclick="openImage(this.src)">
+  <img src="IMG_2007.PNG" alt="Romería hacia la Peña" onclick="openArtDetail('Romería hacia la Peña', this.src, 'Digital · 1640 × 2360 px', '10/07/2026', 'Intenta transmitir al público tradiciones, teniendo como figura principal la Peña de los Enamorados, Patrimonio Mundial de la UNESCO.', 50)">
   <div class="view-art">🔍 Ver obra</div>
 
           <div class="art-info">
@@ -562,7 +841,7 @@
           </div>
         </article>
 <article class="art-card">
-<img src="IMG_2063.jpg" alt="Obra 05" onclick="openImage(this.src)">
+<img src="IMG_2063.jpg" alt="Feria de Antequera" onclick="openArtDetail('Feria de Antequera', this.src, 'Digital · 1142 × 1618 px', '26/07/2026', 'Propuesta para cartel de la Feria de Antequera. Esta obra combina las principales cosas que hacen destacar a Antequera.', 45)">
   <div class="view-art">🔍 Ver obra</div>
       <div class="art-info">
        <h3>Feria de Antequera</h3>
@@ -703,6 +982,25 @@ function removeFromCart(index) {
   function closeImage() {
     document.getElementById("imageModal").classList.remove("open");
   }
+   function openArtDetail(title, image, technique, date, description, price) {
+
+  document.getElementById("detailImage").src = image;
+  document.getElementById("detailTitle").textContent = title;
+  document.getElementById("detailTechnique").textContent = technique;
+  document.getElementById("detailDate").textContent = date;
+  document.getElementById("detailDescription").textContent = description;
+  document.getElementById("detailPrice").textContent = price + " €";
+
+  document.getElementById("detailCartButton").onclick = function() {
+    addToCart(title, price);
+  };
+
+  document.getElementById("artDetail").classList.add("open");
+}
+
+function closeArtDetail() {
+  document.getElementById("artDetail").classList.remove("open");
+}
 </script> 
 </body>
 </html>
