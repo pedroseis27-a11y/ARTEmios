@@ -108,18 +108,45 @@
 
 .cart-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   padding: 16px 0;
   border-bottom: 1px solid #eee7dc;
   color: #625541;
 }
 
-.cart-item span {
-  font-size: 16px;
+.cart-item-image {
+  width: 58px;
+  height: 58px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #ebe4d7;
+  flex-shrink: 0;
 }
 
+.cart-item-info {
+  flex: 1;
+}
+
+.cart-item-info strong {
+  display: block;
+  font-size: 15px;
+  color: #625541;
+  margin-bottom: 3px;
+}
+
+.cart-item-info small {
+  color: #8a8377;
+  font-size: 13px;
+}
+
+.cart-item button {
+  background: none;
+  color: #9b8b73;
+  font-size: 24px;
+  padding: 0 5px;
+  border-radius: 50%;
+}
 .cart-item button {
   background: none;
   color: #9b8b73;
@@ -795,7 +822,7 @@
 <p class="technique">Acrílico y óleo · 40 × 30 cm</p>
 <p class="date">17/06/2025</p>
 <p class="price">150 €</p>
-<button class="add-cart" onclick="addToCart('Flamenca', 150)">Añadir al carrito 🛒</button>
+<button class="add-cart" onclick="addToCart('Flamenca', 150, 'IMG_0821.jpg')">Añadir al carrito 🛒</button>
           </div>
         </article>
 
@@ -809,7 +836,7 @@
 <p class="technique">Acrílico · 30 × 21 cm</p>
 <p class="date">19/05/2025</p>
 <p class="price">30 €</p>
-<button class="add-cart" onclick="addToCart('Puerta de Antequera', 30)">Añadir al carrito 🛒</button>
+<button class="add-cart" onclick="addToCart('Puerta de Antequera', 30, 'IMG_0822.jpg')">Añadir al carrito 🛒</button>
           </div>
         </article>
 
@@ -823,7 +850,7 @@
 <p class="technique">Carboncillo y tinta · 30 × 21 cm</p>
 <p class="date">10/07/2026</p>
 <p class="price">20 €</p>
-<button class="add-cart" onclick="addToCart('Antequera nocturna', 20)">Añadir al carrito 🛒</button>
+<button class="add-cart" onclick="addToCart('Antequera nocturna', 20, 'IMG_0824.jpg')">Añadir al carrito 🛒</button>
           </div>
         </article>
 
@@ -837,7 +864,7 @@
 <p class="technique">Digital · 1640 × 2360 px</p>
 <p class="date">10/07/2026</p>
 <p class="price">50 €</p>
-<button class="add-cart" onclick="addToCart('Romería hacia la Peña', 50)">Añadir al carrito 🛒</button>
+<button class="add-cart" onclick="addToCart('Romería hacia la Peña', 50, 'IMG_2007.PNG')">Añadir al carrito 🛒</button>
           </div>
         </article>
 <article class="art-card">
@@ -849,7 +876,7 @@
 <p class="technique">Digital · 1142 × 1618 px</p>
 <p class="date">26/07/2026</p>
 <p class="price">45 €</p>
-<button class="add-cart" onclick="addToCart('Feria de Antequera', 45)">Añadir al carrito 🛒</button>
+<button class="add-cart" onclick="addToCart('Feria de Antequera', 45, 'IMG_2063.jpg')">Añadir al carrito 🛒</button>
       </div>
 </article>
       </div> 
@@ -915,11 +942,17 @@ Sobre mí
   <script>
   let cart = [];
 
-  function addToCart(name, price) {
-    cart.push({ name: name, price: price });
-    updateCart();
-    alert(name + " se ha añadido al carrito 🛒");
-  }
+  function addToCart(name, price, image) {
+  cart.push({
+    name: name,
+    price: price,
+    image: image
+  });
+
+  updateCart();
+
+  alert(name + " se ha añadido al carrito 🛒");
+}
 
 function updateCart() {
   const cartLink = document.querySelector('a[onclick="openCart()"]');
@@ -948,12 +981,24 @@ if (cartCount) {
   cart.forEach(function(item, index) {
     total += item.price;
 
-    html += `
-      <div class="cart-item">
-        <span>${item.name} — ${item.price} €</span>
-        <button onclick="removeFromCart(${index})">×</button>
-      </div>
-    `;
+   html += `
+  <div class="cart-item">
+
+    <img
+      src="${item.image}"
+      alt="${item.name}"
+      class="cart-item-image"
+    >
+
+    <div class="cart-item-info">
+      <strong>${item.name}</strong>
+      <small>${item.price} €</small>
+    </div>
+
+    <button onclick="removeFromCart(${index})">×</button>
+
+  </div>
+`;
   });
 
   cartItems.innerHTML = html;
