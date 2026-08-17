@@ -940,8 +940,7 @@ Sobre mí
   }
 </script>
   <script>
-  let cart = [];
-
+ let cart = JSON.parse(localStorage.getItem("artemiosCart")) || [];
   function addToCart(name, price, image) {
   cart.push({
     name: name,
@@ -955,6 +954,7 @@ Sobre mí
 }
 
 function updateCart() {
+  localStorage.setItem("artemiosCart", JSON.stringify(cart));
   const cartLink = document.querySelector('a[onclick="openCart()"]');
   const cartItems = document.getElementById("cartItems");
   const cartTotal = document.getElementById("cartTotal");
