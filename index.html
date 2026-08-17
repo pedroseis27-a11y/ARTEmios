@@ -96,6 +96,57 @@
   padding: 12px 22px;
   border-radius: 25px;
   cursor: pointer;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  transition: 0.25s;
+}
+
+.cart-panel button:hover {
+  background: #5e503b;
+  transform: translateY(-2px);
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 16px 0;
+  border-bottom: 1px solid #eee7dc;
+  color: #625541;
+}
+
+.cart-item span {
+  font-size: 16px;
+}
+
+.cart-item button {
+  background: none;
+  color: #9b8b73;
+  font-size: 24px;
+  padding: 0 5px;
+  border-radius: 50%;
+}
+
+.cart-item button:hover {
+  background: #f1eadf;
+  color: #756246;
+  transform: none;
+}
+
+#cartTotal {
+  font-size: 21px;
+  font-weight: bold;
+  color: #625541;
+  margin: 25px 0;
+  padding-top: 5px;
+}
+
+.buy-button {
+  width: 100%;
+  font-size: 17px !important;
+  padding: 14px 22px !important;
+  margin-bottom: 12px;
 }
 
 .side-menu.open {
@@ -301,9 +352,11 @@
     <p>Tu carrito está vacío.</p>
   </div>
 
-  <p id="cartTotal">Total: 0 €</p>
+ <p id="cartTotal">Total: 0 €</p>
 
-  <button onclick="closeCart()">Cerrar</button>
+<button class="buy-button" onclick="buyCart()">🛍️ Comprar</button>
+
+<button onclick="closeCart()">Cerrar</button>
 </div>
 </div>
   <header>
@@ -498,6 +551,14 @@ function updateCart() {
 function removeFromCart(index) {
   cart.splice(index, 1);
   updateCart();
+}
+    function buyCart() {
+  if (cart.length === 0) {
+    alert("Tu carrito está vacío 🛒");
+    return;
+  }
+
+  alert("¡Gracias por tu interés en mi arte! 🎨💗\n\nPróximamente podrás realizar el pago directamente desde aquí.");
 }
 </script>
 </body>
