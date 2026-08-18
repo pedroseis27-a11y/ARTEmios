@@ -1255,5 +1255,37 @@ function closeArtDetail() {
 }
    updateCart();
 </script> 
+    const params = new URLSearchParams(window.location.search);
+
+  if (params.get("pago") === "exitoso") {
+    localStorage.removeItem("artemiosCart");
+    cart = [];
+    updateCart();
+
+    alert(
+      "¡Compra realizada con éxito! 🎨💗\n\n" +
+      "Muchas gracias por apoyar ARTEmios."
+    );
+
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
+  }
+
+  if (params.get("pago") === "cancelado") {
+    alert(
+      "El pago ha sido cancelado.\n\n" +
+      "Tu carrito sigue guardado 🛒"
+    );
+
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
+  }
+</script>
 </body>
 </html>
