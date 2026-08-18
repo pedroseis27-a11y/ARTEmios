@@ -1098,164 +1098,9 @@ Sobre mí
     document.getElementById("sideMenu").classList.toggle("open");
   }
 </script>
-  <script>
-  function openCart() {
-    document.getElementById("cartPanel").classList.add("open");
-    document.getElementById("sideMenu").classList.remove("open");
-  }
 
-  function closeCart() {
-    document.getElementById("cartPanel").classList.remove("open");
-  }
-</script>
-  <script>
- let cart = JSON.parse(localStorage.getItem("artemiosCart")) || [];
-  function addToCart(name, price, image) {
-  cart.push({
-    name: name,
-    price: price,
-    image: image
-  });
-
-  updateCart();
-
-  alert(name + " se ha añadido al carrito 🛒");
-}
-
-function updateCart() {
-  localStorage.setItem("artemiosCart", JSON.stringify(cart));
-  const cartLink = document.querySelector('a[onclick="openCart()"]');
-  const cartItems = document.getElementById("cartItems");
-  const cartTotal = document.getElementById("cartTotal");
-
- if (cartLink) {
-  cartLink.textContent = "🛒 Carrito (" + cart.length + ")";
-}
-
-const cartCount = document.getElementById("cartCount");
-
-if (cartCount) {
-  cartCount.textContent = cart.length;
-}
-
-  if (cart.length === 0) {
-    cartItems.innerHTML = "<p>Tu carrito está vacío.</p>";
-    cartTotal.textContent = "Total: 0 €";
-    return;
-  }
-
-  let total = 0;
-  let html = "";
-
-  cart.forEach(function(item, index) {
-    total += item.price;
-
-   html += `
-  <div class="cart-item">
-
-    <img
-      src="${item.image}"
-      alt="${item.name}"
-      class="cart-item-image"
-    >
-
-    <div class="cart-item-info">
-      <strong>${item.name}</strong>
-      <small>${item.price} €</small>
-    </div>
-
-    <button onclick="removeFromCart(${index})">×</button>
-
-  </div>
-`;
-  });
-
-  cartItems.innerHTML = html;
-  cartTotal.textContent = "Total: " + total + " €";
-}
-
-function removeFromCart(index) {
-  cart.splice(index, 1);
-  updateCart();
-}
-  async function buyCart() {
-  if (cart.length === 0) {
-    alert("Tu carrito está vacío 🛒");
-    return;
-  }
-
-  try {
-    const response = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        items: cart
-      })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "No se pudo iniciar el pago");
-    }
-
-    window.location.href = data.url;
-
-} catch (error) {
-  console.error(error);
-  alert("ERROR: " + error.message);
-}
-}
-    function closeOrder() {
-  document.getElementById("orderModal").classList.remove("open");
-}
-    function submitOrder(event) {
-  event.preventDefault();
-
-  alert(
-    "¡Pedido recibido! 🎨💗\n\n" +
-    "Gracias por confiar en ARTEmios."
-  );
-
-  document.querySelector(".order-form").reset();
-
-  closeOrder();
-}
- 
-</script>
- <script>
-  function openImage(src) {
-    document.getElementById("modalImage").src = src;
-    document.getElementById("imageModal").classList.add("open");
-  }
-
-  function closeImage() {
-    document.getElementById("imageModal").classList.remove("open");
-  }
-   function openArtDetail(title, image, technique, date, description, price) {
-
-  document.getElementById("detailImage").src = image;
-  document.getElementById("detailTitle").textContent = title;
-  document.getElementById("detailTechnique").textContent = technique;
-  document.getElementById("detailDate").textContent = date;
-  document.getElementById("detailDescription").textContent = description;
-  document.getElementById("detailPrice").textContent = price + " €";
-
-  document.getElementById("detailCartButton").onclick = function() {
-    addToCart(title, price);
-  };
-
-  document.getElementById("artDetail").classList.add("open");
-}
-
-function closeArtDetail() {
-  document.getElementById("artDetail").classList.remove("open");
-}
-   updateCart();
-</script> 
-    const params = new URLSearchParams(window.location.search);
+<script>
+  const params = new URLSearchParams(window.location.search);
 
   if (params.get("pago") === "exitoso") {
     localStorage.removeItem("artemiosCart");
@@ -1264,7 +1109,7 @@ function closeArtDetail() {
 
     alert(
       "¡Compra realizada con éxito! 🎨💗\n\n" +
-      "Muchas gracias por apoyar ARTEmios."
+      "Muchas gracias por confiar en ARTEmios."
     );
 
     window.history.replaceState(
