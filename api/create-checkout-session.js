@@ -1,10 +1,18 @@
 module.exports = async (req, res) => {
   try {
-    const response = await fetch("https://api.stripe.com/v1");
+    const response = await fetch("https://api.stripe.com/v1/account", {
+      headers: {
+        "Authorization": "Bearer " + process.env.STRIPE_SECRET_KEY
+      }
+    });
 
-    res.status(200).json({
-      ok: true,
-      status: response.status
+    const data = await response.json();
+
+    res.status(response.status).json({
+      ok: response.ok,
+      status: response.status,
+      error: data.error ? data.error.message : null,
+      country: data.country || null
     });
 
   } catch (error) {
