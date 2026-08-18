@@ -1178,11 +1178,36 @@ function removeFromCart(index) {
   cart.splice(index, 1);
   updateCart();
 }
-   function buyCart() {
+   async function buyCart() {
   if (cart.length === 0) {
     alert("Tu carrito está vacío 🛒");
     return;
   }
+
+  try {
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        items: cart
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "No se pudo iniciar el pago");
+    }
+
+    window.location.href = data.url;
+
+  } catch (error) {
+    console.error(error);
+    alert("No se pudo iniciar el pago. Inténtalo de nuevo.");
+  }
+}
 
   const orderItems = document.getElementById("orderItems");
   const orderTotal = document.getElementById("orderTotal");
