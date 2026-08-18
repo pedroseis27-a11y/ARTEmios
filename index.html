@@ -1128,6 +1128,13 @@ Sobre mí
   }
 
   let cart = JSON.parse(localStorage.getItem("artemiosCart")) || [];
+  const stock = {
+  "Flamenca": 1,
+  "Puerta de Antequera": 1,
+  "Antequera nocturna": 1,
+  "Romería hacia la Peña": 1,
+  "Feria de Antequera": 1
+};
 
   function addToCart(name, price, image) {
     cart.push({
