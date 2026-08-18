@@ -35,11 +35,11 @@ module.exports = async (req, res) => {
 
     res.status(200).json({ url: session.url });
 
-  } catch (error) {
+ } catch (error) {
     console.error(error);
 
     res.status(500).json({
-      error: "No se pudo crear la sesión de pago",
+      error: error.message || "Error desconocido",
     });
   }
 };
