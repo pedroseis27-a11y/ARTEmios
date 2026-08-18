@@ -1203,10 +1203,10 @@ function removeFromCart(index) {
 
     window.location.href = data.url;
 
-  } catch (error) {
-    console.error(error);
-    alert("No se pudo iniciar el pago. Inténtalo de nuevo.");
-  }
+} catch (error) {
+  console.error(error);
+  alert("ERROR: " + error.message);
+}
 }
     function closeOrder() {
   document.getElementById("orderModal").classList.remove("open");
