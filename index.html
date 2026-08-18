@@ -506,6 +506,19 @@
   font-size: 13px;
   margin-top: 2px;
 }  
+  .availability {
+  font-size: 13px;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+.availability.available {
+  color: #6f8b63;
+}
+
+.availability.sold {
+  color: #a56b63;
+}  
     .art-card {
   position: relative;
 }
@@ -991,7 +1004,14 @@
 <p class="technique">Acrílico y óleo · 40 × 30 cm</p>
 <p class="date">17/06/2025</p>
 <p class="price">150 €</p>
-<button class="add-cart" onclick="addToCart('Flamenca', 150, 'IMG_0821.jpg')">Añadir al carrito 🛒</button>
+
+<p class="availability available">
+  🟢 Disponible
+</p>
+
+<button class="add-cart" onclick="addToCart('Flamenca', 150, 'IMG_0821.jpg')">
+  Añadir al carrito 🛒
+</button>
           </div>
         </article>
 
