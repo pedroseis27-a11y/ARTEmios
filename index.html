@@ -806,6 +806,21 @@
   font-size: 32px;
   cursor: pointer;
 }
+    .payment-notice {
+  background: #fffdf8;
+  border: 1px solid #ded7ca;
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin: 0 auto 28px;
+  max-width: 600px;
+  color: #716b61;
+  font-size: 14px;
+  box-shadow: 0 5px 18px rgba(70, 60, 45, 0.06);
+}
+
+.payment-notice strong {
+  color: #756246;
+}
   </style>
 </head>
 
@@ -973,13 +988,17 @@
 
   <main>
 
-    <section class="hero" id="inicio">
-     <div class="payment-notice">
-  🛍️ <strong>Pedidos por WhatsApp</strong><br>
-  Hasta que establezcamos un sistema de pagos, los pedidos se realizarán
-  directamente por WhatsApp al <strong>624 722 610</strong>.
-</div>
-      <div class="hero-content">
+   <section class="hero" id="inicio">
+
+  <div class="hero-content">
+
+    <h1>ARTEmios</h1>
+
+    <div class="payment-notice">
+      🛍️ <strong>Pedidos por WhatsApp</strong><br>
+      Hasta que establezcamos un sistema de pagos, los pedidos se realizarán
+      directamente por WhatsApp al <strong>624 722 610</strong>.
+    </div>
         <h1>ARTEmios</h1>
 
         <p>
@@ -1374,17 +1393,9 @@ Sobre mí
   }
 
 
-  /* COMPRAR */
+ /* COMPRAR */
 
-  async function buyCart() {
-
-    if (cart.length === 0) {
-
-      alert("Tu carrito está vacío 🛒");
-
-      return;
-    }
-async function buyCart() {
+function buyCart() {
 
   if (cart.length === 0) {
 
@@ -1400,10 +1411,7 @@ async function buyCart() {
     "Gracias por tu comprensión. 🎨💗"
   );
 
-  
-  }
-
-
+}
   /* MODAL DE PEDIDO */
 
   function closeOrder() {
