@@ -1347,8 +1347,9 @@ Sobre mí
       const name =
         titleElement.textContent.trim();
 
-      const available =
-        stock[name] > 0;
+     const available =
+  stock[name] > 0 &&
+  !cart.some(item => item.name === name);
 
 
       if (available) {
