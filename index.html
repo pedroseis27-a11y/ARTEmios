@@ -974,6 +974,11 @@
   <main>
 
     <section class="hero" id="inicio">
+     <div class="payment-notice">
+  🛍️ <strong>Pedidos por WhatsApp</strong><br>
+  Hasta que establezcamos un sistema de pagos, los pedidos se realizarán
+  directamente por WhatsApp al <strong>624 722 610</strong>.
+</div>
       <div class="hero-content">
         <h1>ARTEmios</h1>
 
@@ -1025,6 +1030,11 @@
 <p class="technique">Acrílico · 30 × 21 cm</p>
 <p class="date">19/05/2025</p>
 <p class="price">30 €</p>
+
+<p class="availability available">
+  🟢 Disponible
+</p>
+
 <button class="add-cart" onclick="addToCart('Puerta de Antequera', 30, 'IMG_0822.jpg')">Añadir al carrito 🛒</button>
           </div>
         </article>
@@ -1039,6 +1049,11 @@
 <p class="technique">Carboncillo y tinta · 30 × 21 cm</p>
 <p class="date">10/07/2026</p>
 <p class="price">20 €</p>
+
+<p class="availability available">
+  🟢 Disponible
+</p>
+
 <button class="add-cart" onclick="addToCart('Antequera nocturna', 20, 'IMG_0824.jpg')">Añadir al carrito 🛒</button>
           </div>
         </article>
@@ -1053,6 +1068,11 @@
 <p class="technique">Digital · 1640 × 2360 px</p>
 <p class="date">10/07/2026</p>
 <p class="price">50 €</p>
+
+<p class="availability available">
+  🟢 Disponible
+</p>
+
 <button class="add-cart" onclick="addToCart('Romería hacia la Peña', 50, 'IMG_2007.PNG')">Añadir al carrito 🛒</button>
           </div>
         </article>
@@ -1065,6 +1085,11 @@
 <p class="technique">Digital · 1142 × 1618 px</p>
 <p class="date">26/07/2026</p>
 <p class="price">45 €</p>
+
+<p class="availability available">
+  🟢 Disponible
+</p>
+
 <button class="add-cart" onclick="addToCart('Feria de Antequera', 45, 'IMG_2063.jpg')">Añadir al carrito 🛒</button>
       </div>
 </article>
@@ -1359,52 +1384,23 @@ Sobre mí
 
       return;
     }
+async function buyCart() {
 
+  if (cart.length === 0) {
 
-    try {
+    alert("Tu carrito está vacío 🛒");
 
-      const response = await fetch(
-        "/api/create-checkout-session",
-        {
-          method: "POST",
+    return;
+  }
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+  alert(
+    "🛍️ Los pedidos se realizan actualmente por WhatsApp.\n\n" +
+    "Hasta que establezcamos un sistema de pagos, " +
+    "contacta con nosotros por WhatsApp al 624 722 610.\n\n" +
+    "Gracias por tu comprensión. 🎨💗"
+  );
 
-          body: JSON.stringify({
-            items: cart
-          })
-        }
-      );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          "No se pudo iniciar el pago"
-        );
-      }
-
-
-      window.location.href =
-        data.url;
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "ERROR: " +
-        error.message
-      );
-    }
+  
   }
 
 
