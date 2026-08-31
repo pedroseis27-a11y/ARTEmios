@@ -229,7 +229,20 @@
       text-align: center;
       padding: 60px 20px;
     }
+.order-notice {
+  background: #fffdf8;
+  border: 1px solid #ded7ca;
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin-bottom: 30px;
+  color: #756246;
+  font-size: 15px;
+  box-shadow: 0 5px 18px rgba(70, 60, 45, 0.08);
+}
 
+.order-notice strong {
+  color: #625541;
+}
     .hero-content {
       max-width: 750px;
     }
@@ -975,6 +988,10 @@
 
     <section class="hero" id="inicio">
       <div class="hero-content">
+        <div class="order-notice">
+  📢 Actualmente los pedidos se realizan por WhatsApp al
+  <strong>624 722 610</strong> hasta que implementemos el pago online.
+</div>
         <h1>ARTEmios</h1>
 
         <p>
@@ -1025,6 +1042,9 @@
 <p class="technique">Acrílico · 30 × 21 cm</p>
 <p class="date">19/05/2025</p>
 <p class="price">30 €</p>
+    <p class="availability available">
+  🟢 Disponible
+</p>
 <button class="add-cart" onclick="addToCart('Puerta de Antequera', 30, 'IMG_0822.jpg')">Añadir al carrito 🛒</button>
           </div>
         </article>
@@ -1039,6 +1059,9 @@
 <p class="technique">Carboncillo y tinta · 30 × 21 cm</p>
 <p class="date">10/07/2026</p>
 <p class="price">20 €</p>
+    <p class="availability available">
+  🟢 Disponible
+</p>
 <button class="add-cart" onclick="addToCart('Antequera nocturna', 20, 'IMG_0824.jpg')">Añadir al carrito 🛒</button>
           </div>
         </article>
@@ -1053,6 +1076,9 @@
 <p class="technique">Digital · 1640 × 2360 px</p>
 <p class="date">10/07/2026</p>
 <p class="price">50 €</p>
+    <p class="availability available">
+  🟢 Disponible
+</p>
 <button class="add-cart" onclick="addToCart('Romería hacia la Peña', 50, 'IMG_2007.PNG')">Añadir al carrito 🛒</button>
           </div>
         </article>
@@ -1065,6 +1091,9 @@
 <p class="technique">Digital · 1142 × 1618 px</p>
 <p class="date">26/07/2026</p>
 <p class="price">45 €</p>
+    <p class="availability available">
+  🟢 Disponible
+</p>
 <button class="add-cart" onclick="addToCart('Feria de Antequera', 45, 'IMG_2063.jpg')">Añadir al carrito 🛒</button>
       </div>
 </article>
