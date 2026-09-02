@@ -1006,6 +1006,21 @@
 .admin-button:active {
   transform: translateY(0);
 }
+  .admin-obra-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-obra-thumb {
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #ded7ca;
+  box-shadow: 0 3px 10px rgba(70, 60, 45, 0.10);
+  background: #f5f0e6;
+}  
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1430,10 +1445,20 @@ cargarObrasDesdeSupabase();
     item.innerHTML = `
       <div class="admin-obra-header">
 
-        <div class="admin-obra-info">
-          <strong>${obra.nombre}</strong>
-          <span>${obra.precio} € · Stock: ${obra.stock}</span>
-        </div>
+  <div class="admin-obra-info">
+
+    <img
+      src="${obra.imagen}"
+      alt="${obra.nombre}"
+      class="admin-obra-thumb"
+    >
+
+    <div>
+      <strong>${obra.nombre}</strong>
+      <span>${obra.precio} € · Stock: ${obra.stock}</span>
+    </div>
+
+  </div>
 
         <div class="admin-obra-actions">
           <button class="edit-btn" onclick="editarObra(${obra.id})">
