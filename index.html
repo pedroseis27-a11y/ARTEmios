@@ -872,7 +872,7 @@
 
     <h2>Administrar ARTEmios</h2>
 
-  <div id="adminLogin">
+ <div id="adminLogin">
   <input type="email" id="adminEmail" placeholder="Correo electrónico">
   
   <input type="password" id="adminPassword" placeholder="Contraseña">
@@ -882,6 +882,16 @@
   </button>
 
   <p id="adminLoginMessage"></p>
+</div>
+
+<div id="adminPanel" style="display: none;">
+  <h3>Panel de administración</h3>
+
+  <p>🔐 Has iniciado sesión correctamente.</p>
+
+  <button onclick="cerrarSesionAdmin()">
+    Cerrar sesión
+  </button>
 </div>
 
 <button onclick="cerrarAdmin()">Cerrar</button>
