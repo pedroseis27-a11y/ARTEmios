@@ -863,6 +863,126 @@
 #adminModal h2 {
   margin-top: 0;
 }
+  #adminModal .modal-content {
+  background: #f5f0e6;
+  color: #3f3a32;
+  border: 1px solid #ded7ca;
+}
+
+#adminModal h2 {
+  color: #756246;
+  font-size: 30px;
+  margin-bottom: 25px;
+}
+
+#adminModal h3 {
+  color: #625541;
+  margin-bottom: 15px;
+}
+
+#adminModal input,
+#adminModal textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin: 7px 0;
+  border: 1px solid #ded7ca;
+  border-radius: 10px;
+  background: #fffdf8;
+  color: #3f3a32;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+}
+
+#adminModal textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+#adminModal button {
+  border: none;
+  background: #756246;
+  color: white;
+  padding: 10px 17px;
+  border-radius: 22px;
+  cursor: pointer;
+  font-family: Georgia, "Times New Roman", serif;
+  transition: 0.25s;
+  margin: 4px;
+}
+
+#adminModal button:hover {
+  background: #5e503b;
+  transform: translateY(-1px);
+}
+
+#listaObrasAdmin {
+  margin-top: 25px;
+}
+
+.admin-obra {
+  background: #fffdf8;
+  border: 1px solid #ded7ca;
+  border-radius: 15px;
+  padding: 18px;
+  margin: 12px 0;
+  text-align: left;
+  box-shadow: 0 5px 18px rgba(70, 60, 45, 0.06);
+}
+
+.admin-obra-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.admin-obra-info strong {
+  display: block;
+  color: #625541;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.admin-obra-info span {
+  color: #8a8377;
+  font-size: 14px;
+}
+
+.admin-obra-actions {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-obra-actions .edit-btn {
+  background: #9b8050;
+}
+
+.admin-obra-actions .delete-btn {
+  background: #a56b63;
+}
+
+.admin-inline-edit {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #ded7ca;
+}
+
+.admin-inline-edit label {
+  display: block;
+  color: #756246;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.admin-inline-edit .save-btn {
+  background: #6f8b63;
+}
+
+.admin-inline-edit .cancel-btn {
+  background: #8a8377;
+}  
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
