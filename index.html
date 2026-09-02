@@ -1113,6 +1113,40 @@ comprobarSupabase();
   }
 
   console.log("Obras cargadas desde Supabase:", data);
+    const gallery = document.getElementById("galleryContainer");
+
+gallery.innerHTML = "";
+
+data.forEach(obra => {
+  const card = document.createElement("article");
+  card.className = "art-card";
+
+  card.innerHTML = `
+    <img src="${obra.imagen}" alt="${obra.nombre}"
+      onclick="openArtDetail('${obra.nombre}', this.src, '${obra.tecnica}', '${obra.fecha}', '${obra.descripcion}', ${obra.precio})">
+
+    <div class="view-art">🔍 Ver obra</div>
+
+    <div class="art-info">
+      <h3>${obra.nombre}</h3>
+      <p>Por Pedro Mariscal Sánchez</p>
+      <p class="technique">${obra.tecnica}</p>
+      <p class="date">${obra.fecha}</p>
+      <p class="price">${obra.precio} €</p>
+
+      <p class="availability available">
+        🟢 Disponible
+      </p>
+
+      <button class="add-cart"
+        onclick="addToCart('${obra.nombre}', ${obra.precio}, '${obra.imagen}')">
+        Añadir al carrito 🛒
+      </button>
+    </div>
+  `;
+
+  gallery.appendChild(card);
+});
 }
 
 cargarObrasDesdeSupabase();
