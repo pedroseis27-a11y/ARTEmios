@@ -1245,6 +1245,41 @@ function cerrarAdmin() {
   function mostrarFormularioObra() {
   document.getElementById("formularioObra").style.display = "block";
 }
+   const nombre = document.getElementById("obraNombre").value;
+  const descripcion = document.getElementById("obraDescripcion").value;
+  const precio = document.getElementById("obraPrecio").value;
+  const tecnica = document.getElementById("obraTecnica").value;
+  const fecha = document.getElementById("obraFecha").value;
+  const imagen = document.getElementById("obraImagen").value;
+  const stock = document.getElementById("obraStock").value;
+
+  const { data, error } = await supabaseClient
+    .from("obras")
+    .insert([
+      {
+        nombre: nombre,
+        descripcion: descripcion,
+        precio: precio,
+        tecnica: tecnica,
+        fecha: fecha,
+        imagen: imagen,
+        stock: stock
+      }
+    ])
+    .select();
+
+  if (error) {
+    console.error("Error creando obra:", error);
+    alert("❌ No se ha podido guardar la obra");
+    return;
+  }
+
+  alert("✅ Obra añadida correctamente");
+
+  document.getElementById("formularioObra").style.display = "none";
+
+  cargarObrasDesdeSupabase();
+} 
   async function iniciarSesionAdmin() {
   const email = document.getElementById("adminEmail").value;
   const password = document.getElementById("adminPassword").value;
