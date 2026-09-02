@@ -1173,6 +1173,13 @@ Sobre mí
     © 2026 ARTEmios · Un espacio para el arte
   </footer>
 <script>
+  const SUPABASE_URL = "https://ovmqnoeusiclwyqrwnpk.supabase.co";
+const SUPABASE_KEY = sb_publishable_QxiZSWNA5gXpWjunf2EpgA_Lmw7O-mq;
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
   function toggleMenu() {
    document.getElementById("sideMenu").classList.toggle("open");
   }
