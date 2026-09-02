@@ -872,9 +872,19 @@
 
     <h2>Administrar ARTEmios</h2>
 
-    <p>Panel de administración</p>
+  <div id="adminLogin">
+  <input type="email" id="adminEmail" placeholder="Correo electrónico">
+  
+  <input type="password" id="adminPassword" placeholder="Contraseña">
 
-    <button onclick="cerrarAdmin()">Cerrar</button>
+  <button onclick="iniciarSesionAdmin()">
+    Iniciar sesión
+  </button>
+
+  <p id="adminLoginMessage"></p>
+</div>
+
+<button onclick="cerrarAdmin()">Cerrar</button>
   </div>
 </div>
   <div id="artDetail" class="art-detail" onclick="closeArtDetail()">
