@@ -1277,31 +1277,7 @@ cargarObrasDesdeSupabase();
   });
 }
  async function editarObra(id) {
-   async function eliminarObra(id) {
-  const confirmar = confirm(
-    "⚠️ ¿Seguro que quieres eliminar esta obra?\n\nEsta acción no se puede deshacer."
-  );
-
-  if (!confirmar) {
-    return;
-  }
-
-  const { error } = await supabaseClient
-    .from("obras")
-    .delete()
-    .eq("id", id);
-
-  if (error) {
-    console.error("Error eliminando la obra:", error);
-    alert("❌ No se ha podido eliminar la obra");
-    return;
-  }
-
-  alert("✅ Obra eliminada correctamente");
-
-  cargarObrasDesdeSupabase();
-  cargarObrasAdmin();
-}
+   async function editarObra(id) {
   const { data, error } = await supabaseClient
     .from("obras")
     .select("*")
@@ -1359,7 +1335,32 @@ cargarObrasDesdeSupabase();
   cargarObrasDesdeSupabase();
   cargarObrasAdmin();
 }
- function abrirAdmin() {
+
+async function eliminarObra(id) {
+  const confirmar = confirm(
+    "⚠️ ¿Seguro que quieres eliminar esta obra?\n\nEsta acción no se puede deshacer."
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("obras")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error eliminando la obra:", error);
+    alert("❌ No se ha podido eliminar la obra");
+    return;
+  }
+
+  alert("✅ Obra eliminada correctamente");
+
+  cargarObrasDesdeSupabase();
+  cargarObrasAdmin();
+}
   document.getElementById("adminModal").classList.add("open");
 
   cargarObrasAdmin();
