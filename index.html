@@ -1276,8 +1276,63 @@ cargarObrasDesdeSupabase();
     lista.appendChild(item);
   });
 }
-  function editarObra(id) {
-  alert("✏️ Próximamente editaremos la obra con ID: " + id);
+ async function editarObra(id) {
+  const { data, error } = await supabaseClient
+    .from("obras")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("Error obteniendo la obra:", error);
+    alert("❌ No se ha podido cargar la obra");
+    return;
+  }
+
+  const nuevoNombre = prompt("Nombre de la obra:", data.nombre);
+  if (nuevoNombre === null) return;
+
+  const nuevaDescripcion = prompt("Descripción:", data.descripcion || "");
+  if (nuevaDescripcion === null) return;
+
+  const nuevoPrecio = prompt("Precio (€):", data.precio);
+  if (nuevoPrecio === null) return;
+
+  const nuevaTecnica = prompt("Técnica y medidas:", data.tecnica || "");
+  if (nuevaTecnica === null) return;
+
+  const nuevaFecha = prompt("Fecha:", data.fecha || "");
+  if (nuevaFecha === null) return;
+
+  const nuevaImagen = prompt("URL de la imagen:", data.imagen || "");
+  if (nuevaImagen === null) return;
+
+  const nuevoStock = prompt("Stock:", data.stock);
+  if (nuevoStock === null) return;
+
+  const { error: updateError } = await supabaseClient
+    .from("obras")
+    .update({
+      nombre: nuevoNombre,
+      descripcion: nuevaDescripcion,
+      precio: Number(nuevoPrecio),
+      tecnica: nuevaTecnica,
+      fecha: nuevaFecha,
+      imagen: nuevaImagen,
+      stock: Number(nuevoStock)
+    })
+    .eq("id", id);
+
+  if (updateError) {
+    console.error("Error actualizando la obra:", updateError);
+    alert("❌ No se ha podido actualizar la obra");
+    return;
+  }
+
+  alert("✅ Obra actualizada correctamente");
+
+  cargarObrasDesdeSupabase();
+  cargarObrasAdmin();
 }
  function abrirAdmin() {
   document.getElementById("adminModal").classList.add("open");
