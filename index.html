@@ -917,6 +917,35 @@
   </button>
 
 </div>
+  <div id="formularioEditarObra" style="display: none;">
+
+  <h3>✏️ Editar obra</h3>
+
+  <input type="hidden" id="editarObraId">
+
+  <input type="text" id="editarObraNombre" placeholder="Nombre de la obra">
+
+  <textarea id="editarObraDescripcion" placeholder="Descripción"></textarea>
+
+  <input type="number" id="editarObraPrecio" placeholder="Precio (€)">
+
+  <input type="text" id="editarObraTecnica" placeholder="Técnica y medidas">
+
+  <input type="text" id="editarObraFecha" placeholder="Fecha">
+
+  <input type="text" id="editarObraImagen" placeholder="URL de la imagen">
+
+  <input type="number" id="editarObraStock" placeholder="Stock">
+
+  <button onclick="guardarEdicionObra()">
+    💾 Guardar cambios
+  </button>
+
+  <button onclick="cancelarEdicionObra()">
+    ❌ Cancelar
+  </button>
+
+</div>
 
   <button onclick="cerrarSesionAdmin()">
     Cerrar sesión
@@ -1277,7 +1306,7 @@ cargarObrasDesdeSupabase();
   });
 }
 
-   async function editarObra(id) {
+  async function editarObra(id) {
   const { data, error } = await supabaseClient
     .from("obras")
     .select("*")
@@ -1290,52 +1319,54 @@ cargarObrasDesdeSupabase();
     return;
   }
 
-  const nuevoNombre = prompt("Nombre de la obra:", data.nombre);
-  if (nuevoNombre === null) return;
+  document.getElementById("editarObraId").value = data.id;
+  document.getElementById("editarObraNombre").value = data.nombre || "";
+  document.getElementById("editarObraDescripcion").value = data.descripcion || "";
+  document.getElementById("editarObraPrecio").value = data.precio || "";
+  document.getElementById("editarObraTecnica").value = data.tecnica || "";
+  document.getElementById("editarObraFecha").value = data.fecha || "";
+  document.getElementById("editarObraImagen").value = data.imagen || "";
+  document.getElementById("editarObraStock").value = data.stock ?? 1;
 
-  const nuevaDescripcion = prompt("Descripción:", data.descripcion || "");
-  if (nuevaDescripcion === null) return;
+  document.getElementById("formularioObra").style.display = "none";
+  document.getElementById("formularioEditarObra").style.display = "block";
+}
+async function guardarEdicionObra() {
+  const id = document.getElementById("editarObraId").value;
+  const nombre = document.getElementById("editarObraNombre").value;
+  const descripcion = document.getElementById("editarObraDescripcion").value;
+  const precio = document.getElementById("editarObraPrecio").value;
+  const tecnica = document.getElementById("editarObraTecnica").value;
+  const fecha = document.getElementById("editarObraFecha").value;
+  const imagen = document.getElementById("editarObraImagen").value;
+  const stock = document.getElementById("editarObraStock").value;
 
-  const nuevoPrecio = prompt("Precio (€):", data.precio);
-  if (nuevoPrecio === null) return;
-
-  const nuevaTecnica = prompt("Técnica y medidas:", data.tecnica || "");
-  if (nuevaTecnica === null) return;
-
-  const nuevaFecha = prompt("Fecha:", data.fecha || "");
-  if (nuevaFecha === null) return;
-
-  const nuevaImagen = prompt("URL de la imagen:", data.imagen || "");
-  if (nuevaImagen === null) return;
-
-  const nuevoStock = prompt("Stock:", data.stock);
-  if (nuevoStock === null) return;
-
-  const { error: updateError } = await supabaseClient
+  const { error } = await supabaseClient
     .from("obras")
     .update({
-      nombre: nuevoNombre,
-      descripcion: nuevaDescripcion,
-      precio: Number(nuevoPrecio),
-      tecnica: nuevaTecnica,
-      fecha: nuevaFecha,
-      imagen: nuevaImagen,
-      stock: Number(nuevoStock)
+      nombre: nombre,
+      descripcion: descripcion,
+      precio: Number(precio),
+      tecnica: tecnica,
+      fecha: fecha,
+      imagen: imagen,
+      stock: Number(stock)
     })
     .eq("id", id);
 
-  if (updateError) {
-    console.error("Error actualizando la obra:", updateError);
-    alert("❌ No se ha podido actualizar la obra");
+  if (error) {
+    console.error("Error guardando cambios:", error);
+    alert("❌ No se han podido guardar los cambios");
     return;
   }
 
-  alert("✅ Obra actualizada correctamente");
+  alert("✅ Cambios guardados correctamente");
+
+  document.getElementById("formularioEditarObra").style.display = "none";
 
   cargarObrasDesdeSupabase();
   cargarObrasAdmin();
 }
-
 async function eliminarObra(id) {
   const confirmar = confirm(
     "⚠️ ¿Seguro que quieres eliminar esta obra?\n\nEsta acción no se puede deshacer."
