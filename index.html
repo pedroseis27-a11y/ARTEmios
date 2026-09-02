@@ -1235,10 +1235,50 @@ data.forEach(obra => {
 }
 
 cargarObrasDesdeSupabase();
-  function abrirAdmin() {
-  document.getElementById("adminModal").classList.add("open");
-}
+  async function cargarObrasAdmin() {
+  const { data, error } = await supabaseClient
+    .from("obras")
+    .select("*")
+    .order("id", { ascending: true });
 
+  if (error) {
+    console.error("Error cargando obras para administrar:", error);
+    return;
+  }
+
+  const lista = document.getElementById("listaObrasAdmin");
+
+  lista.innerHTML = "";
+
+  data.forEach(obra => {
+    const item = document.createElement("div");
+
+    item.innerHTML = `
+      <div style="margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 10px;">
+        <strong>${obra.nombre}</strong>
+        <br>
+        <span>${obra.precio} €</span>
+
+        <br><br>
+
+        <button onclick="editarObra(${obra.id})">
+          ✏️ Editar
+        </button>
+
+        <button onclick="eliminarObra(${obra.id})">
+          🗑️ Eliminar
+        </button>
+      </div>
+    `;
+
+    lista.appendChild(item);
+  });
+}
+ function abrirAdmin() {
+  document.getElementById("adminModal").classList.add("open");
+
+  cargarObrasAdmin();
+}
 function cerrarAdmin() {
   document.getElementById("adminModal").classList.remove("open");
 }
