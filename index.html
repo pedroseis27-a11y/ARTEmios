@@ -1051,6 +1051,30 @@
   color: #8a8377;
   font-size: 14px;
 }
+    .add-art-button {
+  width: 100%;
+  margin: 5px 0 20px !important;
+  padding: 14px 20px !important;
+  background: #fffdf8 !important;
+  color: #756246 !important;
+  border: 1px dashed #b9aa90 !important;
+  border-radius: 14px !important;
+  font-size: 15px !important;
+  font-weight: 600;
+  box-shadow: none !important;
+}
+
+.add-art-button span {
+  font-size: 21px;
+  vertical-align: -1px;
+  margin-right: 5px;
+}
+
+.add-art-button:hover {
+  background: #eee7da !important;
+  border-color: #8d7958 !important;
+  transform: translateY(-1px);
+}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1084,8 +1108,9 @@
   <h3>Panel de administración</h3>
 
   <p>🔐 Has iniciado sesión correctamente.</p>
-  <button onclick="mostrarFormularioObra()">
-  ➕ Añadir obra
+  <button class="add-art-button" onclick="mostrarFormularioObra()">
+  <span>＋</span>
+  Añadir nueva obra
 </button>
 <div id="listaObrasAdmin"></div>
 <div id="formularioObra" style="display: none;">
