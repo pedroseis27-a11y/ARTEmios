@@ -1180,6 +1180,19 @@ const supabase = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+  async function comprobarSupabase() {
+  const { data, error } = await supabase
+    .from("obras")
+    .select("*");
+
+  console.log("Obras en Supabase:", data);
+
+  if (error) {
+    console.error("Error de Supabase:", error);
+  }
+}
+
+comprobarSupabase();
   function toggleMenu() {
    document.getElementById("sideMenu").classList.toggle("open");
   }
