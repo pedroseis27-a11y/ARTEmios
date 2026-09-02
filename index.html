@@ -1245,7 +1245,8 @@ function cerrarAdmin() {
   function mostrarFormularioObra() {
   document.getElementById("formularioObra").style.display = "block";
 }
-   const nombre = document.getElementById("obraNombre").value;
+   async function crearObra() {
+  const nombre = document.getElementById("obraNombre").value;
   const descripcion = document.getElementById("obraDescripcion").value;
   const precio = document.getElementById("obraPrecio").value;
   const tecnica = document.getElementById("obraTecnica").value;
@@ -1279,7 +1280,7 @@ function cerrarAdmin() {
   document.getElementById("formularioObra").style.display = "none";
 
   cargarObrasDesdeSupabase();
-} 
+}
   async function iniciarSesionAdmin() {
   const email = document.getElementById("adminEmail").value;
   const password = document.getElementById("adminPassword").value;
