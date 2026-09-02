@@ -1361,10 +1361,11 @@ async function eliminarObra(id) {
   cargarObrasDesdeSupabase();
   cargarObrasAdmin();
 }
+ function abrirAdmin() {
   document.getElementById("adminModal").classList.add("open");
-
   cargarObrasAdmin();
 }
+
 function cerrarAdmin() {
   document.getElementById("adminModal").classList.remove("open");
 }
