@@ -836,11 +836,47 @@
 .payment-notice strong {
   color: #756246;
 } 
+    #adminModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+
+#adminModal.open {
+  display: flex;
+}
+
+#adminModal .modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  width: min(90%, 500px);
+  text-align: center;
+}
+
+#adminModal h2 {
+  margin-top: 0;
+}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
+  <div id="adminModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="cerrarAdmin()">&times;</span>
+
+    <h2>Administrar ARTEmios</h2>
+
+    <p>Panel de administración</p>
+
+    <button onclick="cerrarAdmin()">Cerrar</button>
+  </div>
+</div>
   <div id="artDetail" class="art-detail" onclick="closeArtDetail()">
 
   <div class="art-detail-box" onclick="event.stopPropagation()">
@@ -994,7 +1030,9 @@
   <button class="cart-button" onclick="openCart()">
     🛒 Carrito (<span id="cartCount">0</span>)
   </button>
-
+<button class="admin-button" onclick="abrirAdmin()">
+  ⚙️ Administrar
+</button>
   <nav>
       <a href="#inicio">Inicio</a>
       <a href="#galeria">Galería</a>
@@ -1150,6 +1188,13 @@ data.forEach(obra => {
 }
 
 cargarObrasDesdeSupabase();
+  function abrirAdmin() {
+  document.getElementById("adminModal").classList.add("open");
+}
+
+function cerrarAdmin() {
+  document.getElementById("adminModal").classList.remove("open");
+}
   function toggleMenu() {
    document.getElementById("sideMenu").classList.toggle("open");
   }
