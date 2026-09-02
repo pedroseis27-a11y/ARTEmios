@@ -1193,6 +1193,21 @@ const supabaseClient  = window.supabase.createClient(
 }
 
 comprobarSupabase();
+  async function cargarObrasDesdeSupabase() {
+  const { data, error } = await supabaseClient
+    .from("obras")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Error cargando obras:", error);
+    return;
+  }
+
+  console.log("Obras cargadas desde Supabase:", data);
+}
+
+cargarObrasDesdeSupabase();
   function toggleMenu() {
    document.getElementById("sideMenu").classList.toggle("open");
   }
