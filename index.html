@@ -1375,10 +1375,7 @@ async function eliminarObra(id) {
   if (!confirmar) {
     return;
   }
-  function cancelarEdicionObra() {
-  document.getElementById("formularioEditarObra").style.display = "none";
-  document.getElementById("formularioObra").style.display = "none";
-}
+ 
 
   const { error } = await supabaseClient
     .from("obras")
@@ -1395,6 +1392,11 @@ async function eliminarObra(id) {
 
   cargarObrasDesdeSupabase();
   cargarObrasAdmin();
+}
+  
+function cancelarEdicionObra() {
+  document.getElementById("formularioEditarObra").style.display = "none";
+  document.getElementById("formularioObra").style.display = "none";
 }
  function abrirAdmin() {
   document.getElementById("adminModal").classList.add("open");
