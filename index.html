@@ -1398,34 +1398,108 @@ cargarObrasDesdeSupabase();
   }
 
   const lista = document.getElementById("listaObrasAdmin");
-
   lista.innerHTML = "";
 
   data.forEach(obra => {
     const item = document.createElement("div");
+    item.className = "admin-obra";
 
     item.innerHTML = `
-      <div style="margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 10px;">
-        <strong>${obra.nombre}</strong>
-        <br>
-        <span>${obra.precio} €</span>
+      <div class="admin-obra-header">
 
-        <br><br>
+        <div class="admin-obra-info">
+          <strong>${obra.nombre}</strong>
+          <span>${obra.precio} € · Stock: ${obra.stock}</span>
+        </div>
 
-        <button onclick="editarObra(${obra.id})">
-          ✏️ Editar
+        <div class="admin-obra-actions">
+          <button class="edit-btn" onclick="editarObra(${obra.id})">
+            ✏️ Editar
+          </button>
+
+          <button class="delete-btn" onclick="eliminarObra(${obra.id})">
+            🗑️ Eliminar
+          </button>
+        </div>
+
+      </div>
+
+      <div
+        id="editar-admin-${obra.id}"
+        class="admin-inline-edit"
+        style="display: none;"
+      >
+
+        <h3>✏️ Editar obra</h3>
+
+        <label>Nombre</label>
+        <input
+          type="text"
+          id="editarNombre-${obra.id}"
+          placeholder="Nombre de la obra"
+        >
+
+        <label>Descripción</label>
+        <textarea
+          id="editarDescripcion-${obra.id}"
+          placeholder="Descripción"
+        ></textarea>
+
+        <label>Precio (€)</label>
+        <input
+          type="number"
+          id="editarPrecio-${obra.id}"
+          placeholder="Precio"
+        >
+
+        <label>Técnica y medidas</label>
+        <input
+          type="text"
+          id="editarTecnica-${obra.id}"
+          placeholder="Técnica y medidas"
+        >
+
+        <label>Fecha</label>
+        <input
+          type="text"
+          id="editarFecha-${obra.id}"
+          placeholder="Fecha"
+        >
+
+        <label>Cambiar imagen</label>
+        <input
+          type="file"
+          id="editarImagen-${obra.id}"
+          accept="image/*"
+        >
+
+        <label>Stock</label>
+        <input
+          type="number"
+          id="editarStock-${obra.id}"
+          placeholder="Stock"
+        >
+
+        <button
+          class="save-btn"
+          onclick="guardarEdicionObra(${obra.id})"
+        >
+          💾 Guardar cambios
         </button>
 
-        <button onclick="eliminarObra(${obra.id})">
-          🗑️ Eliminar
+        <button
+          class="cancel-btn"
+          onclick="cancelarEdicionObra(${obra.id})"
+        >
+          ❌ Cancelar
         </button>
+
       </div>
     `;
 
     lista.appendChild(item);
   });
 }
-
   async function editarObra(id) {
   const { data, error } = await supabaseClient
     .from("obras")
@@ -1439,27 +1513,72 @@ cargarObrasDesdeSupabase();
     return;
   }
 
-  document.getElementById("editarObraId").value = data.id;
-  document.getElementById("editarObraNombre").value = data.nombre || "";
-  document.getElementById("editarObraDescripcion").value = data.descripcion || "";
-  document.getElementById("editarObraPrecio").value = data.precio || "";
-  document.getElementById("editarObraTecnica").value = data.tecnica || "";
-  document.getElementById("editarObraFecha").value = data.fecha || "";
+  document.getElementById(`editarNombre-${id}`).value = data.nombre || "";
 
-  document.getElementById("editarObraStock").value = data.stock ?? 1;
+  document.getElementById(`editarDescripcion-${id}`).value =
+    data.descripcion || "";
 
-  document.getElementById("formularioObra").style.display = "none";
-  document.getElementById("formularioEditarObra").style.display = "block";
+  document.getElementById(`editarPrecio-${id}`).value =
+    data.precio ?? "";
+
+  document.getElementById(`editarTecnica-${id}`).value =
+    data.tecnica || "";
+
+  document.getElementById(`editarFecha-${id}`).value =
+    data.fecha || "";
+
+  document.getElementById(`editarStock-${id}`).value =
+    data.stock ?? 1;
+
+  document.getElementById(`editar-admin-${id}`).style.display = "block";
 }
-async function guardarEdicionObra() {
-  const id = document.getElementById("editarObraId").value;
-  const nombre = document.getElementById("editarObraNombre").value;
-  const descripcion = document.getElementById("editarObraDescripcion").value;
-  const precio = document.getElementById("editarObraPrecio").value;
-  const tecnica = document.getElementById("editarObraTecnica").value;
-  const fecha = document.getElementById("editarObraFecha").value;
-  const imagen = document.getElementById("editarObraImagen").value;
-  const stock = document.getElementById("editarObraStock").value;
+async function guardarEdicionObra(id) {
+  const nombre = document.getElementById(`editarNombre-${id}`).value;
+  const descripcion = document.getElementById(`editarDescripcion-${id}`).value;
+  const precio = document.getElementById(`editarPrecio-${id}`).value;
+  const tecnica = document.getElementById(`editarTecnica-${id}`).value;
+  const fecha = document.getElementById(`editarFecha-${id}`).value;
+  const stock = document.getElementById(`editarStock-${id}`).value;
+  const archivoImagen = document.getElementById(`editarImagen-${id}`).files[0];
+
+  const { data: obraActual, error: obraError } = await supabaseClient
+    .from("obras")
+    .select("imagen")
+    .eq("id", id)
+    .single();
+
+  if (obraError) {
+    console.error("Error obteniendo la imagen actual:", obraError);
+    alert("❌ No se han podido guardar los cambios");
+    return;
+  }
+
+  let imagen = obraActual.imagen;
+
+  if (archivoImagen) {
+    const nombreArchivo = Date.now() + "_" + archivoImagen.name
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+    const { error: uploadError } = await supabaseClient
+      .storage
+      .from("obras")
+      .upload(nombreArchivo, archivoImagen);
+
+    if (uploadError) {
+      console.error("Error subiendo imagen:", uploadError);
+      alert("❌ No se ha podido subir la nueva imagen");
+      return;
+    }
+
+    const { data: urlData } = supabaseClient
+      .storage
+      .from("obras")
+      .getPublicUrl(nombreArchivo);
+
+    imagen = urlData.publicUrl;
+  }
 
   const { error } = await supabaseClient
     .from("obras")
@@ -1481,8 +1600,6 @@ async function guardarEdicionObra() {
   }
 
   alert("✅ Cambios guardados correctamente");
-
-  document.getElementById("formularioEditarObra").style.display = "none";
 
   cargarObrasDesdeSupabase();
   cargarObrasAdmin();
@@ -1514,9 +1631,8 @@ async function eliminarObra(id) {
   cargarObrasAdmin();
 }
   
-function cancelarEdicionObra() {
-  document.getElementById("formularioEditarObra").style.display = "none";
-  document.getElementById("formularioObra").style.display = "none";
+function cancelarEdicionObra(id) {
+  document.getElementById(`editar-admin-${id}`).style.display = "none";
 }
  function abrirAdmin() {
   document.getElementById("adminModal").classList.add("open");
