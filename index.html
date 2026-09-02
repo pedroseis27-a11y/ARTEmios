@@ -1375,6 +1375,10 @@ async function eliminarObra(id) {
   if (!confirmar) {
     return;
   }
+  function cancelarEdicionObra() {
+  document.getElementById("formularioEditarObra").style.display = "none";
+  document.getElementById("formularioObra").style.display = "none";
+}
 
   const { error } = await supabaseClient
     .from("obras")
