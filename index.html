@@ -1242,6 +1242,9 @@ cargarObrasDesdeSupabase();
 function cerrarAdmin() {
   document.getElementById("adminModal").classList.remove("open");
 }
+  function mostrarFormularioObra() {
+  document.getElementById("formularioObra").style.display = "block";
+}
   async function iniciarSesionAdmin() {
   const email = document.getElementById("adminEmail").value;
   const password = document.getElementById("adminPassword").value;
