@@ -1232,6 +1232,8 @@ function cerrarAdmin() {
   }
 
   mensaje.textContent = "✅ Sesión iniciada correctamente";
+    document.getElementById("adminLogin").style.display = "none";
+document.getElementById("adminPanel").style.display = "block";
 
   console.log("Administrador conectado:", data.user);
 }
