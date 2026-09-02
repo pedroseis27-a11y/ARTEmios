@@ -1421,7 +1421,10 @@ function cerrarAdmin() {
   return;
 }
 
-const nombreArchivo = Date.now() + "_" + archivoImagen.name;
+const nombreArchivo = Date.now() + "_" + archivoImagen.name
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .replace(/[^a-zA-Z0-9._-]/g, "_");
 
 const { error: uploadError } = await supabaseClient
   .storage
