@@ -962,7 +962,27 @@
 .admin-obra-actions .delete-btn {
   background: #a56b63;
 }
+.order-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: #e9e1d2 !important;
+  color: #756246 !important;
+  font-size: 18px;
+  font-weight: bold;
+}
 
+.order-btn:hover {
+  background: #dcd1bd !important;
+  color: #625541 !important;
+}
+
+.order-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none !important;
+}
 .admin-inline-edit {
   margin-top: 18px;
   padding-top: 18px;
@@ -1460,7 +1480,7 @@ comprobarSupabase();
   const { data, error } = await supabaseClient
     .from("obras")
     .select("*")
-    .order("id", { ascending: true });
+   .order("orden", { ascending: true });
 
   if (error) {
     console.error("Error cargando obras:", error);
@@ -1505,11 +1525,11 @@ data.forEach(obra => {
 }
 
 cargarObrasDesdeSupabase();
-  async function cargarObrasAdmin() {
+async function cargarObrasAdmin() {
   const { data, error } = await supabaseClient
     .from("obras")
     .select("*")
-    .order("id", { ascending: true });
+    .order("orden", { ascending: true });
 
   if (error) {
     console.error("Error cargando obras para administrar:", error);
@@ -1519,36 +1539,60 @@ cargarObrasDesdeSupabase();
   const lista = document.getElementById("listaObrasAdmin");
   lista.innerHTML = "";
 
-  data.forEach(obra => {
+  data.forEach((obra, index) => {
     const item = document.createElement("div");
     item.className = "admin-obra";
 
     item.innerHTML = `
       <div class="admin-obra-header">
 
-  <div class="admin-obra-info">
+        <div class="admin-obra-info">
 
-    <img
-      src="${obra.imagen}"
-      alt="${obra.nombre}"
-      class="admin-obra-thumb"
-    >
+          <img
+            src="${obra.imagen}"
+            alt="${obra.nombre}"
+            class="admin-obra-thumb"
+          >
 
-    <div>
-      <strong>${obra.nombre}</strong>
-      <span>${obra.precio} € · Stock: ${obra.stock}</span>
-    </div>
+          <div>
+            <strong>${obra.nombre}</strong>
+            <span>${obra.precio} € · Stock: ${obra.stock}</span>
+          </div>
 
-  </div>
+        </div>
 
         <div class="admin-obra-actions">
-          <button class="edit-btn" onclick="editarObra(${obra.id})">
+
+          <button
+            class="order-btn"
+            onclick="subirObra(${obra.id})"
+            ${index === 0 ? "disabled" : ""}
+          >
+            ↑
+          </button>
+
+          <button
+            class="order-btn"
+            onclick="bajarObra(${obra.id})"
+            ${index === data.length - 1 ? "disabled" : ""}
+          >
+            ↓
+          </button>
+
+          <button
+            class="edit-btn"
+            onclick="editarObra(${obra.id})"
+          >
             ✏️ Editar
           </button>
 
-          <button class="delete-btn" onclick="eliminarObra(${obra.id})">
+          <button
+            class="delete-btn"
+            onclick="eliminarObra(${obra.id})"
+          >
             🗑️ Eliminar
           </button>
+
         </div>
 
       </div>
@@ -1629,7 +1673,89 @@ cargarObrasDesdeSupabase();
     lista.appendChild(item);
   });
 }
-  async function editarObra(id) {
+
+
+async function subirObra(id) {
+  const { data: obraActual, error: errorActual } = await supabaseClient
+    .from("obras")
+    .select("id, orden")
+    .eq("id", id)
+    .single();
+
+  if (errorActual) {
+    console.error("Error obteniendo la obra:", errorActual);
+    return;
+  }
+
+  const { data: obraAnterior, error: errorAnterior } = await supabaseClient
+    .from("obras")
+    .select("id, orden")
+    .lt("orden", obraActual.orden)
+    .order("orden", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (errorAnterior) {
+    console.error("No hay una obra anterior:", errorAnterior);
+    return;
+  }
+
+  await supabaseClient
+    .from("obras")
+    .update({ orden: obraAnterior.orden })
+    .eq("id", obraActual.id);
+
+  await supabaseClient
+    .from("obras")
+    .update({ orden: obraActual.orden })
+    .eq("id", obraAnterior.id);
+
+  cargarObrasDesdeSupabase();
+  cargarObrasAdmin();
+}
+
+
+async function bajarObra(id) {
+  const { data: obraActual, error: errorActual } = await supabaseClient
+    .from("obras")
+    .select("id, orden")
+    .eq("id", id)
+    .single();
+
+  if (errorActual) {
+    console.error("Error obteniendo la obra:", errorActual);
+    return;
+  }
+
+  const { data: obraSiguiente, error: errorSiguiente } = await supabaseClient
+    .from("obras")
+    .select("id, orden")
+    .gt("orden", obraActual.orden)
+    .order("orden", { ascending: true })
+    .limit(1)
+    .single();
+
+  if (errorSiguiente) {
+    console.error("No hay una obra siguiente:", errorSiguiente);
+    return;
+  }
+
+  await supabaseClient
+    .from("obras")
+    .update({ orden: obraSiguiente.orden })
+    .eq("id", obraActual.id);
+
+  await supabaseClient
+    .from("obras")
+    .update({ orden: obraActual.orden })
+    .eq("id", obraSiguiente.id);
+
+  cargarObrasDesdeSupabase();
+  cargarObrasAdmin();
+}
+
+
+async function editarObra(id) {
   const { data, error } = await supabaseClient
     .from("obras")
     .select("*")
@@ -1642,7 +1768,8 @@ cargarObrasDesdeSupabase();
     return;
   }
 
-  document.getElementById(`editarNombre-${id}`).value = data.nombre || "";
+  document.getElementById(`editarNombre-${id}`).value =
+    data.nombre || "";
 
   document.getElementById(`editarDescripcion-${id}`).value =
     data.descripcion || "";
@@ -1659,9 +1786,10 @@ cargarObrasDesdeSupabase();
   document.getElementById(`editarStock-${id}`).value =
     data.stock ?? 1;
 
-  document.getElementById(`editar-admin-${id}`).style.display = "block";
+  document.getElementById(`editar-admin-${id}`).style.display =
+    "block";
 }
-async function guardarEdicionObra(id) {
+  async function guardarEdicionObra(id) {
   const nombre = document.getElementById(`editarNombre-${id}`).value;
   const descripcion = document.getElementById(`editarDescripcion-${id}`).value;
   const precio = document.getElementById(`editarPrecio-${id}`).value;
