@@ -933,7 +933,7 @@
 
   <input type="text" id="editarObraFecha" placeholder="Fecha">
 
-  <input type="text" id="editarObraImagen" placeholder="URL de la imagen">
+ <input type="file" id="obraImagen" accept="image/*">
 
   <input type="number" id="editarObraStock" placeholder="Stock">
 
@@ -1409,7 +1409,31 @@ function cerrarAdmin() {
   const precio = document.getElementById("obraPrecio").value;
   const tecnica = document.getElementById("obraTecnica").value;
   const fecha = document.getElementById("obraFecha").value;
-  const imagen = document.getElementById("obraImagen").value;
+  const archivoImagen = document.getElementById("obraImagen").files[0];
+     if (!archivoImagen) {
+  alert("❌ Selecciona una imagen");
+  return;
+}
+
+const nombreArchivo = Date.now() + "_" + archivoImagen.name;
+
+const { error: uploadError } = await supabaseClient
+  .storage
+  .from("obras")
+  .upload(nombreArchivo, archivoImagen);
+
+if (uploadError) {
+  console.error("Error subiendo imagen:", uploadError);
+  alert("❌ No se ha podido subir la imagen");
+  return;
+}
+
+const { data: urlData } = supabaseClient
+  .storage
+  .from("obras")
+  .getPublicUrl(nombreArchivo);
+
+const imagen = urlData.publicUrl;
   const stock = document.getElementById("obraStock").value;
 
   const { data, error } = await supabaseClient
