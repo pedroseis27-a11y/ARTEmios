@@ -984,23 +984,42 @@
   background: #8a8377;
 }  
     .admin-button {
-  background: #756246;
-  color: #fffdf8;
-  border: 1px solid #8d7958;
-  padding: 10px 18px;
-  border-radius: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  background: rgba(255, 253, 248, 0.75);
+  color: #756246;
+
+  border: 1px solid #cfc3ad;
+  padding: 9px 16px;
+
+  border-radius: 25px;
+
   font-family: Georgia, "Times New Roman", serif;
   font-size: 14px;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
+
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(70, 60, 45, 0.12);
+
+  box-shadow: 0 3px 10px rgba(70, 60, 45, 0.08);
+
   transition: all 0.25s ease;
 }
 
+.admin-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
 .admin-button:hover {
-  background: #625541;
+  background: #756246;
+  color: #fffdf8;
+  border-color: #756246;
+
   transform: translateY(-2px);
-  box-shadow: 0 7px 18px rgba(70, 60, 45, 0.18);
+
+  box-shadow: 0 6px 16px rgba(70, 60, 45, 0.16);
 }
 
 .admin-button:active {
@@ -1328,7 +1347,8 @@
     🛒 Carrito (<span id="cartCount">0</span>)
   </button>
 <button class="admin-button" onclick="abrirAdmin()">
-  ⚙️ Administración
+  <span class="admin-icon">⚙</span>
+  Administración
 </button>
   <nav>
       <a href="#inicio">Inicio</a>
