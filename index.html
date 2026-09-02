@@ -1021,6 +1021,36 @@
   box-shadow: 0 3px 10px rgba(70, 60, 45, 0.10);
   background: #f5f0e6;
 }  
+    .admin-heading {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #ded7ca;
+}
+
+.admin-heading-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9e1d2;
+  border-radius: 14px;
+  font-size: 24px;
+}
+
+.admin-heading h2 {
+  margin: 0 !important;
+  font-size: 28px !important;
+}
+
+.admin-heading p {
+  margin: 4px 0 0;
+  color: #8a8377;
+  font-size: 14px;
+}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1030,7 +1060,13 @@
   <div class="modal-content">
     <span class="close" onclick="cerrarAdmin()">&times;</span>
 
-    <h2>Administrar ARTEmios</h2>
+   <div class="admin-heading">
+  <span class="admin-heading-icon">🎨</span>
+  <div>
+    <h2>Administración</h2>
+    <p>Gestiona las obras de ARTEmios</p>
+  </div>
+</div>
 
  <div id="adminLogin">
   <input type="email" id="adminEmail" placeholder="Correo electrónico">
