@@ -888,6 +888,33 @@
   <h3>Panel de administración</h3>
 
   <p>🔐 Has iniciado sesión correctamente.</p>
+  <button onclick="mostrarFormularioObra()">
+  ➕ Añadir obra
+</button>
+
+<div id="formularioObra" style="display: none;">
+
+  <h3>Nueva obra</h3>
+
+  <input type="text" id="obraNombre" placeholder="Nombre de la obra">
+
+  <textarea id="obraDescripcion" placeholder="Descripción"></textarea>
+
+  <input type="number" id="obraPrecio" placeholder="Precio (€)">
+
+  <input type="text" id="obraTecnica" placeholder="Técnica y medidas">
+
+  <input type="text" id="obraFecha" placeholder="Fecha">
+
+  <input type="text" id="obraImagen" placeholder="URL de la imagen">
+
+  <input type="number" id="obraStock" placeholder="Stock" value="1">
+
+  <button onclick="crearObra()">
+    💾 Guardar obra
+  </button>
+
+</div>
 
   <button onclick="cerrarSesionAdmin()">
     Cerrar sesión
