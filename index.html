@@ -1205,6 +1205,26 @@ cargarObrasDesdeSupabase();
 function cerrarAdmin() {
   document.getElementById("adminModal").classList.remove("open");
 }
+  async function iniciarSesionAdmin() {
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  const mensaje = document.getElementById("adminLoginMessage");
+
+  if (error) {
+    mensaje.textContent = "❌ Correo o contraseña incorrectos";
+    return;
+  }
+
+  mensaje.textContent = "✅ Sesión iniciada correctamente";
+
+  console.log("Administrador conectado:", data.user);
+}
   function toggleMenu() {
    document.getElementById("sideMenu").classList.toggle("open");
   }
