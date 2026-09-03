@@ -962,6 +962,32 @@
 .admin-obra-actions .delete-btn {
   background: #a56b63;
 }
+    .category-filters {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 auto 30px;
+}
+
+.category-filters button {
+  border: 1px solid #cfc3ad;
+  background: #fffdf8;
+  color: #756246;
+  padding: 9px 18px;
+  border-radius: 22px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.category-filters button:hover {
+  background: #756246;
+  color: #fffdf8;
+  border-color: #756246;
+  transform: translateY(-2px);
+}
 .order-btn {
   width: 36px;
   height: 36px;
@@ -1407,7 +1433,12 @@
       <h2 class="section-title">
         Galería
       </h2>
-
+<div class="category-filters">
+  <button onclick="filtrarCategoria('Todas')">Todas</button>
+  <button onclick="filtrarCategoria('Pintura')">Pintura</button>
+  <button onclick="filtrarCategoria('Blanco y negro')">Blanco y negro</button>
+  <button onclick="filtrarCategoria('Digital')">Digital</button>
+</div>
       <div class="gallery" id="galleryContainer">
 
       </div> 
@@ -1476,6 +1507,21 @@ const supabaseClient  = window.supabase.createClient(
 }
 
 comprobarSupabase();
+  function filtrarCategoria(categoria) {
+  const obras = document.querySelectorAll(".art-card");
+
+  obras.forEach(obra => {
+    if (categoria === "Todas") {
+      obra.style.display = "";
+      return;
+    }
+
+    const categoriaObra = obra.dataset.categoria;
+
+    obra.style.display =
+      categoriaObra === categoria ? "" : "none";
+  });
+}
   async function cargarObrasDesdeSupabase() {
   const { data, error } = await supabaseClient
     .from("obras")
@@ -1495,6 +1541,7 @@ gallery.innerHTML = "";
 data.forEach(obra => {
   const card = document.createElement("article");
   card.className = "art-card";
+  card.dataset.categoria = obra.categoria;
 
   card.innerHTML = `
     <img src="${obra.imagen}" alt="${obra.nombre}"
