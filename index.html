@@ -1159,6 +1159,14 @@
 }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css"
+>
+
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+
+Quedaría así:
 </head>
 
 <body>
@@ -1215,7 +1223,12 @@
 
   <input type="text" id="obraFecha" placeholder="Fecha">
 
-  <input type="file" id="obraImagen" accept="image/*">
+ <input
+  type="file"
+  id="obraImagen"
+  accept="image/*"
+  onchange="abrirRecortador(this)"
+>
 
   <input type="number" id="obraStock" placeholder="Stock" value="1">
 
@@ -1722,11 +1735,12 @@ async function cargarObrasAdmin() {
         >
 
         <label>Cambiar imagen</label>
-        <input
-          type="file"
-          id="editarImagen-${obra.id}"
-          accept="image/*"
-        >
+       <input
+  type="file"
+  id="editarImagen-${obra.id}"
+  accept="image/*"
+  onchange="abrirRecortador(this)"
+>
 
         <label>Stock</label>
         <input
@@ -1878,7 +1892,7 @@ async function editarObra(id) {
   const tecnica = document.getElementById(`editarTecnica-${id}`).value;
   const fecha = document.getElementById(`editarFecha-${id}`).value;
   const stock = document.getElementById(`editarStock-${id}`).value;
-  const archivoImagen = document.getElementById(`editarImagen-${id}`).files[0];
+const archivoImagen = imagenRecortada || document.getElementById(`editarImagen-${id}`).files[0];
 
   const { data: obraActual, error: obraError } = await supabaseClient
     .from("obras")
@@ -1984,6 +1998,61 @@ function cerrarAdmin() {
   function mostrarFormularioObra() {
   document.getElementById("formularioObra").style.display = "block";
 }
+  let cropper = null;
+let imagenRecortada = null;
+
+function abrirRecortador(input) {
+  const archivo = input.files[0];
+
+  if (!archivo) return;
+
+  const url = URL.createObjectURL(archivo);
+  const imagen = document.getElementById("imagenParaRecortar");
+
+  imagen.src = url;
+
+  document.getElementById("cropModal").classList.add("open");
+
+  imagen.onload = () => {
+    if (cropper) {
+      cropper.destroy();
+    }
+
+    cropper = new Cropper(imagen, {
+      aspectRatio: NaN,
+      viewMode: 1,
+      autoCropArea: 1
+    });
+  };
+}
+
+function cerrarRecortador() {
+  document.getElementById("cropModal").classList.remove("open");
+
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+}
+  function confirmarRecorte() {
+  if (!cropper) return;
+
+  cropper.getCroppedCanvas({
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: "high"
+  }).toBlob((blob) => {
+
+    imagenRecortada = new File(
+      [blob],
+      "obra.jpg",
+      { type: "image/jpeg" }
+    );
+
+    cerrarRecortador();
+
+    alert("✅ Imagen recortada correctamente");
+  }, "image/jpeg", 0.92);
+}
   async function crearObra() {
   const nombre = document.getElementById("obraNombre").value;
   const descripcion = document.getElementById("obraDescripcion").value;
@@ -1991,7 +2060,7 @@ function cerrarAdmin() {
   const tecnica = document.getElementById("obraTecnica").value;
   const categoria = document.getElementById("obraCategoria").value;
   const fecha = document.getElementById("obraFecha").value;
-  const archivoImagen = document.getElementById("obraImagen").files[0];
+  const archivoImagen = imagenRecortada || document.getElementById("obraImagen").files[0];
 
   if (!archivoImagen) {
     alert("❌ Selecciona una imagen");
@@ -2063,6 +2132,16 @@ function cerrarAdmin() {
   alert("✅ Obra añadida correctamente");
 
   document.getElementById("formularioObra").style.display = "none";
+   document.getElementById("obraNombre").value = "";
+document.getElementById("obraDescripcion").value = "";
+document.getElementById("obraPrecio").value = "";
+document.getElementById("obraTecnica").value = "";
+document.getElementById("obraCategoria").value = "Pintura";
+document.getElementById("obraFecha").value = "";
+document.getElementById("obraImagen").value = "";
+document.getElementById("obraStock").value = "1";
+
+imagenRecortada = null; 
 
   cargarObrasDesdeSupabase();
   cargarObrasAdmin();
@@ -2514,6 +2593,28 @@ function buyCart() {
   }
 
 </script>
+<div id="cropModal" class="modal">
+  <div class="modal-content crop-content">
 
+    <span class="close" onclick="cerrarRecortador()">&times;</span>
+
+    <h2>✂️ Recortar imagen</h2>
+
+    <div class="crop-container">
+      <img id="imagenParaRecortar" src="" alt="Imagen para recortar">
+    </div>
+
+    <div class="crop-actions">
+      <button onclick="confirmarRecorte()">
+        ✅ Usar esta imagen
+      </button>
+
+      <button onclick="cerrarRecortador()">
+        ❌ Cancelar
+      </button>
+    </div>
+
+  </div>
+</div>
 </body>
 </html>
