@@ -2034,14 +2034,27 @@ function cancelarEdicionObra(id) {
 function cerrarAdmin() {
   document.getElementById("adminModal").classList.remove("open");
 }
-  function mostrarFormularioObra() {
+ function mostrarFormularioObra() {
   document.getElementById("formularioObra").style.display = "block";
+
+  document.getElementById("obraNombre").value = "";
+  document.getElementById("obraDescripcion").value = "";
+  document.getElementById("obraPrecio").value = "";
+  document.getElementById("obraTecnica").value = "";
+  document.getElementById("obraCategoria").value = "Pintura";
+  document.getElementById("obraFecha").value = "";
+  document.getElementById("obraImagen").value = "";
+  document.getElementById("obraStock").value = "1";
+
+  imagenRecortada = null;
 }
   let cropper = null;
 let imagenRecortada = null;
 
 function abrirRecortador(input) {
   console.log("RECORTADOR EJECUTADO");
+   imagenRecortada = null;
+
   const archivo = input.files[0];
 
   if (!archivo) return;
