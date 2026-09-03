@@ -105,6 +105,11 @@
   background: #5e503b;
   transform: translateY(-2px);
 }
+    .category-filters button.active {
+  background: #756246;
+  color: #fffdf8;
+  border-color: #756246;
+}
 
 .cart-item {
   display: flex;
@@ -1434,7 +1439,7 @@
         Galería
       </h2>
 <div class="category-filters">
-  <button onclick="filtrarCategoria('Todas')">Todas</button>
+ <button class="active" onclick="filtrarCategoria('Todas')">Todas</button>
   <button onclick="filtrarCategoria('Pintura')">Pintura</button>
   <button onclick="filtrarCategoria('Blanco y negro')">Blanco y negro</button>
   <button onclick="filtrarCategoria('Digital')">Digital</button>
@@ -1507,8 +1512,19 @@ const supabaseClient  = window.supabase.createClient(
 }
 
 comprobarSupabase();
-  function filtrarCategoria(categoria) {
+ function filtrarCategoria(categoria) {
   const obras = document.querySelectorAll(".art-card");
+  const botones = document.querySelectorAll(".category-filters button");
+
+  botones.forEach(boton => {
+    boton.classList.remove("active");
+  });
+
+  botones.forEach(boton => {
+    if (boton.textContent.trim() === categoria) {
+      boton.classList.add("active");
+    }
+  });
 
   obras.forEach(obra => {
     if (categoria === "Todas") {
