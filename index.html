@@ -1620,9 +1620,20 @@ comprobarSupabase();
     return;
   }
 
-  console.log("Obras cargadas desde Supabase:", data);
-    const gallery = document.getElementById("galleryContainer");
+console.log("Obras cargadas desde Supabase:", data);
 
+data.forEach(obra => {
+  if (stock[obra.nombre] === undefined) {
+    stock[obra.nombre] = obra.stock;
+  }
+});
+
+localStorage.setItem(
+  "artemiosStock",
+  JSON.stringify(stock)
+);
+
+const gallery = document.getElementById("galleryContainer");
 gallery.innerHTML = "";
 
 data.forEach(obra => {
