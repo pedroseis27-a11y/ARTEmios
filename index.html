@@ -781,6 +781,18 @@
   min-height: 90px;
   resize: vertical;
 }
+  #adminModal select {
+  width: 100%;
+  padding: 12px 14px;
+  margin: 7px 0;
+  border: 1px solid #ded7ca;
+  border-radius: 10px;
+  background: #fffdf8;
+  color: #3f3a32;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  cursor: pointer;
+}  
 
 .order-submit {
   width: 100%;
@@ -1178,11 +1190,11 @@
   <h3>Panel de administración</h3>
 
   <p>🔐 Has iniciado sesión correctamente.</p>
-  <button class="add-art-button" onclick="mostrarFormularioObra()">
+ <button class="add-art-button" onclick="mostrarFormularioObra()">
   <span>＋</span>
   Añadir nueva obra
 </button>
-<div id="listaObrasAdmin"></div>
+
 <div id="formularioObra" style="display: none;">
 
   <h3>Nueva obra</h3>
@@ -1194,6 +1206,12 @@
   <input type="number" id="obraPrecio" placeholder="Precio (€)">
 
   <input type="text" id="obraTecnica" placeholder="Técnica y medidas">
+  <label>Categoría</label>
+<select id="obraCategoria">
+  <option value="Pintura">Pintura</option>
+  <option value="Blanco y negro">Blanco y negro</option>
+  <option value="Digital">Digital</option>
+</select>
 
   <input type="text" id="obraFecha" placeholder="Fecha">
 
@@ -1965,40 +1983,57 @@ function cerrarAdmin() {
   function mostrarFormularioObra() {
   document.getElementById("formularioObra").style.display = "block";
 }
-   async function crearObra() {
+  async function crearObra() {
   const nombre = document.getElementById("obraNombre").value;
   const descripcion = document.getElementById("obraDescripcion").value;
   const precio = document.getElementById("obraPrecio").value;
   const tecnica = document.getElementById("obraTecnica").value;
+  const categoria = document.getElementById("obraCategoria").value;
   const fecha = document.getElementById("obraFecha").value;
   const archivoImagen = document.getElementById("obraImagen").files[0];
-     if (!archivoImagen) {
-  alert("❌ Selecciona una imagen");
-  return;
-}
 
-const nombreArchivo = Date.now() + "_" + archivoImagen.name
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g, "")
-  .replace(/[^a-zA-Z0-9._-]/g, "_");
+  if (!archivoImagen) {
+    alert("❌ Selecciona una imagen");
+    return;
+  }
 
-const { error: uploadError } = await supabaseClient
-  .storage
-  .from("obras")
-  .upload(nombreArchivo, archivoImagen);
+  const { data: ultimaObra, error: ordenError } = await supabaseClient
+    .from("obras")
+    .select("orden")
+    .order("orden", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-if (uploadError) {
-  console.error("Error subiendo imagen:", uploadError);
-  alert("❌ No se ha podido subir la imagen");
-  return;
-}
+  if (ordenError) {
+    console.error("Error obteniendo el orden:", ordenError);
+    alert("❌ No se ha podido determinar el orden de la obra");
+    return;
+  }
 
-const { data: urlData } = supabaseClient
-  .storage
-  .from("obras")
-  .getPublicUrl(nombreArchivo);
+  const nuevoOrden = ultimaObra ? ultimaObra.orden + 1 : 1;
 
-const imagen = urlData.publicUrl;
+  const nombreArchivo = Date.now() + "_" + archivoImagen.name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+  const { error: uploadError } = await supabaseClient
+    .storage
+    .from("obras")
+    .upload(nombreArchivo, archivoImagen);
+
+  if (uploadError) {
+    console.error("Error subiendo imagen:", uploadError);
+    alert("❌ No se ha podido subir la imagen");
+    return;
+  }
+
+  const { data: urlData } = supabaseClient
+    .storage
+    .from("obras")
+    .getPublicUrl(nombreArchivo);
+
+  const imagen = urlData.publicUrl;
   const stock = document.getElementById("obraStock").value;
 
   const { data, error } = await supabaseClient
@@ -2009,9 +2044,11 @@ const imagen = urlData.publicUrl;
         descripcion: descripcion,
         precio: precio,
         tecnica: tecnica,
+        categoria: categoria,
         fecha: fecha,
         imagen: imagen,
-        stock: stock
+        stock: stock,
+        orden: nuevoOrden
       }
     ])
     .select();
@@ -2027,6 +2064,7 @@ const imagen = urlData.publicUrl;
   document.getElementById("formularioObra").style.display = "none";
 
   cargarObrasDesdeSupabase();
+  cargarObrasAdmin();
 }
   async function iniciarSesionAdmin() {
   const email = document.getElementById("adminEmail").value;
