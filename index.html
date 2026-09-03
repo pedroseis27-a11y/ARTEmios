@@ -1157,6 +1157,34 @@
   border-color: #8d7958 !important;
   transform: translateY(-1px);
 }
+    #cropModal.open {
+  display: flex;
+}
+
+.crop-content {
+  max-width: 800px;
+  width: 90%;
+}
+
+.crop-container {
+  width: 100%;
+  max-height: 500px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+
+.crop-container img {
+  display: block;
+  max-width: 100%;
+  max-height: 500px;
+}
+
+.crop-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link
