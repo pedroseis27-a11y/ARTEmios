@@ -1701,8 +1701,9 @@ function iniciarArrastre(event) {
     event.currentTarget.dataset.id
   );
   document.body.classList.add("arrastrando-obra");
-  document.addEventListener("wheel", controlarRuedaDuranteArrastre, {
-  passive: false
+ document.addEventListener("wheel", controlarRuedaDuranteArrastre, {
+  passive: false,
+  capture: true
 });
 }
 
