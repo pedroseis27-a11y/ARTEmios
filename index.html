@@ -1689,16 +1689,7 @@ data.forEach(obra => {
 
 cargarObrasDesdeSupabase();
 let obraArrastrada = null;
-document.addEventListener("wheel", function(event) {
-  if (!obraArrastrada) return;
 
-  window.scrollBy({
-    top: event.deltaY,
-    behavior: "auto"
-  });
-
-  event.preventDefault();
-}, { passive: false });  
 
 function iniciarArrastre(event) {
   obraArrastrada = event.currentTarget;
@@ -1709,6 +1700,7 @@ function iniciarArrastre(event) {
     "text/plain",
     event.currentTarget.dataset.id
   );
+  document.body.classList.add("arrastrando-obra");
 }
 
 function permitirSoltar(event) {
@@ -1751,7 +1743,11 @@ async function soltarObra(event) {
 
   await guardarOrdenObras();
 }
+document.addEventListener("wheel", function(event) {
+  if (!obraArrastrada) return;
 
+  window.scrollBy(0, event.deltaY);
+});
 function terminarArrastre(event) {
   event.currentTarget.classList.remove("dragging");
 
