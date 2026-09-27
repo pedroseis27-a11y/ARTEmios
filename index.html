@@ -1195,6 +1195,24 @@
   gap: 10px;
   margin-top: 15px;
 }
+    .admin-obra {
+  cursor: grab;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-obra:active {
+  cursor: grabbing;
+}
+
+.admin-obra.dragging {
+  opacity: 0.45;
+  transform: scale(0.98);
+}
+
+.admin-obra.drag-over {
+  border-color: #756246;
+  box-shadow: 0 0 0 2px rgba(117, 98, 70, 0.15);
+}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link
@@ -1204,7 +1222,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 
-Quedaría así:
+
 </head>
 
 <body>
@@ -1670,156 +1688,94 @@ data.forEach(obra => {
 }
 
 cargarObrasDesdeSupabase();
-async function cargarObrasAdmin() {
-  const { data, error } = await supabaseClient
-    .from("obras")
-    .select("*")
-    .order("orden", { ascending: true });
+let obraArrastrada = null;
 
-  if (error) {
-    console.error("Error cargando obras para administrar:", error);
+function iniciarArrastre(event) {
+  obraArrastrada = event.currentTarget;
+  event.currentTarget.classList.add("dragging");
+
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData(
+    "text/plain",
+    event.currentTarget.dataset.id
+  );
+}
+
+function permitirSoltar(event) {
+  event.preventDefault();
+
+  const destino = event.currentTarget;
+
+  if (destino !== obraArrastrada) {
+    destino.classList.add("drag-over");
+  }
+
+  event.dataTransfer.dropEffect = "move";
+}
+
+function salirDeZona(event) {
+  event.currentTarget.classList.remove("drag-over");
+}
+
+async function soltarObra(event) {
+  event.preventDefault();
+
+  const destino = event.currentTarget;
+  destino.classList.remove("drag-over");
+
+  if (!obraArrastrada || destino === obraArrastrada) {
     return;
   }
 
   const lista = document.getElementById("listaObrasAdmin");
-  lista.innerHTML = "";
+  const elementos = [...lista.querySelectorAll(".admin-obra")];
 
-  data.forEach((obra, index) => {
-    const item = document.createElement("div");
-    item.className = "admin-obra";
+  const posicionOrigen = elementos.indexOf(obraArrastrada);
+  const posicionDestino = elementos.indexOf(destino);
 
-    item.innerHTML = `
-      <div class="admin-obra-header">
+  if (posicionOrigen < posicionDestino) {
+    lista.insertBefore(obraArrastrada, destino.nextSibling);
+  } else {
+    lista.insertBefore(obraArrastrada, destino);
+  }
 
-        <div class="admin-obra-info">
-
-          <img
-            src="${obra.imagen}"
-            alt="${obra.nombre}"
-            class="admin-obra-thumb"
-          >
-
-          <div>
-            <strong>${obra.nombre}</strong>
-            <span>${obra.precio} € · Stock: ${obra.stock}</span>
-          </div>
-
-        </div>
-
-        <div class="admin-obra-actions">
-
-          <button
-            class="order-btn"
-            onclick="subirObra(${obra.id})"
-            ${index === 0 ? "disabled" : ""}
-          >
-            ↑
-          </button>
-
-          <button
-            class="order-btn"
-            onclick="bajarObra(${obra.id})"
-            ${index === data.length - 1 ? "disabled" : ""}
-          >
-            ↓
-          </button>
-
-          <button
-            class="edit-btn"
-            onclick="editarObra(${obra.id})"
-          >
-            ✏️ Editar
-          </button>
-
-          <button
-            class="delete-btn"
-            onclick="eliminarObra(${obra.id})"
-          >
-            🗑️ Eliminar
-          </button>
-
-        </div>
-
-      </div>
-
-      <div
-        id="editar-admin-${obra.id}"
-        class="admin-inline-edit"
-        style="display: none;"
-      >
-
-        <h3>✏️ Editar obra</h3>
-
-        <label>Nombre</label>
-        <input
-          type="text"
-          id="editarNombre-${obra.id}"
-          placeholder="Nombre de la obra"
-        >
-
-        <label>Descripción</label>
-        <textarea
-          id="editarDescripcion-${obra.id}"
-          placeholder="Descripción"
-        ></textarea>
-
-        <label>Precio (€)</label>
-        <input
-          type="number"
-          id="editarPrecio-${obra.id}"
-          placeholder="Precio"
-        >
-
-        <label>Técnica y medidas</label>
-        <input
-          type="text"
-          id="editarTecnica-${obra.id}"
-          placeholder="Técnica y medidas"
-        >
-
-        <label>Fecha</label>
-        <input
-          type="text"
-          id="editarFecha-${obra.id}"
-          placeholder="Fecha"
-        >
-
-        <label>Cambiar imagen</label>
-       <input
-  type="file"
-  id="editarImagen-${obra.id}"
-  accept="image/*"
-  onchange="abrirRecortador(this)"
->
-
-        <label>Stock</label>
-        <input
-          type="number"
-          id="editarStock-${obra.id}"
-          placeholder="Stock"
-        >
-
-        <button
-          class="save-btn"
-          onclick="guardarEdicionObra(${obra.id})"
-        >
-          💾 Guardar cambios
-        </button>
-
-        <button
-          class="cancel-btn"
-          onclick="cancelarEdicionObra(${obra.id})"
-        >
-          ❌ Cancelar
-        </button>
-
-      </div>
-    `;
-
-    lista.appendChild(item);
-  });
+  await guardarOrdenObras();
 }
 
+function terminarArrastre(event) {
+  event.currentTarget.classList.remove("dragging");
+
+  document.querySelectorAll(".admin-obra").forEach(obra => {
+    obra.classList.remove("drag-over");
+  });
+
+  obraArrastrada = null;
+}
+
+async function guardarOrdenObras() {
+  const lista = document.getElementById("listaObrasAdmin");
+  const obras = [...lista.querySelectorAll(".admin-obra")];
+
+  for (let i = 0; i < obras.length; i++) {
+    const id = Number(obras[i].dataset.id);
+
+    const { error } = await supabaseClient
+      .from("obras")
+      .update({ orden: i + 1 })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error guardando el orden:", error);
+      alert("❌ No se ha podido guardar el nuevo orden");
+      return;
+    }
+  }
+
+  await cargarObrasDesdeSupabase();
+  await cargarObrasAdmin();
+
+  console.log("✅ Orden de obras guardado");
+}
 
 async function subirObra(id) {
   const { data: obraActual, error: errorActual } = await supabaseClient
@@ -2036,6 +1992,80 @@ async function eliminarObra(id) {
   
 function cancelarEdicionObra(id) {
   document.getElementById(`editar-admin-${id}`).style.display = "none";
+}
+  async function cargarObrasAdmin() {
+  const { data, error } = await supabaseClient
+    .from("obras")
+    .select("*")
+    .order("orden", { ascending: true });
+
+  if (error) {
+    console.error("Error cargando obras para administrar:", error);
+    return;
+  }
+
+  const lista = document.getElementById("listaObrasAdmin");
+  lista.innerHTML = "";
+
+  data.forEach((obra) => {
+    const item = document.createElement("div");
+    item.className = "admin-obra";
+    item.draggable = true;
+    item.dataset.id = obra.id;
+
+    item.addEventListener("dragstart", iniciarArrastre);
+    item.addEventListener("dragover", permitirSoltar);
+    item.addEventListener("dragleave", salirDeZona);
+    item.addEventListener("drop", soltarObra);
+    item.addEventListener("dragend", terminarArrastre);
+
+    item.innerHTML = `
+      <div class="admin-obra-header">
+        <div class="admin-obra-info">
+          <img src="${obra.imagen}" alt="${obra.nombre}" class="admin-obra-thumb">
+          <div>
+            <strong>${obra.nombre}</strong>
+            <span>${obra.precio} € · Stock: ${obra.stock}</span>
+          </div>
+        </div>
+
+        <div class="admin-obra-actions">
+          <button class="edit-btn" onclick="editarObra(${obra.id})">✏️ Editar</button>
+          <button class="delete-btn" onclick="eliminarObra(${obra.id})">🗑️ Eliminar</button>
+        </div>
+      </div>
+
+      <div id="editar-admin-${obra.id}" class="admin-inline-edit" style="display: none;">
+        <h3>✏️ Editar obra</h3>
+
+        <label>Nombre</label>
+        <input type="text" id="editarNombre-${obra.id}" placeholder="Nombre de la obra">
+
+        <label>Descripción</label>
+        <textarea id="editarDescripcion-${obra.id}" placeholder="Descripción"></textarea>
+
+        <label>Precio (€)</label>
+        <input type="number" id="editarPrecio-${obra.id}" placeholder="Precio">
+
+        <label>Técnica y medidas</label>
+        <input type="text" id="editarTecnica-${obra.id}" placeholder="Técnica y medidas">
+
+        <label>Fecha</label>
+        <input type="text" id="editarFecha-${obra.id}" placeholder="Fecha">
+
+        <label>Cambiar imagen</label>
+        <input type="file" id="editarImagen-${obra.id}" accept="image/*" onchange="abrirRecortador(this)">
+
+        <label>Stock</label>
+        <input type="number" id="editarStock-${obra.id}" placeholder="Stock">
+
+        <button class="save-btn" onclick="guardarEdicionObra(${obra.id})">💾 Guardar cambios</button>
+        <button class="cancel-btn" onclick="cancelarEdicionObra(${obra.id})">❌ Cancelar</button>
+      </div>
+    `;
+
+    lista.appendChild(item);
+  });
 }
  function abrirAdmin() {
   document.getElementById("adminModal").classList.add("open");
