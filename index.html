@@ -1701,6 +1701,9 @@ function iniciarArrastre(event) {
     event.currentTarget.dataset.id
   );
   document.body.classList.add("arrastrando-obra");
+  document.addEventListener("wheel", controlarRuedaDuranteArrastre, {
+  passive: false
+});
 }
 
 function permitirSoltar(event) {
@@ -1743,18 +1746,24 @@ async function soltarObra(event) {
 
   await guardarOrdenObras();
 }
-document.addEventListener("wheel", function(event) {
+function controlarRuedaDuranteArrastre(event) {
   if (!obraArrastrada) return;
 
-  window.scrollBy(0, event.deltaY);
-});
+  const contenedor = document.querySelector("#adminModal .modal-content");
+
+  if (!contenedor) return;
+
+  contenedor.scrollTop += event.deltaY;
+  event.preventDefault();
+}
 function terminarArrastre(event) {
   event.currentTarget.classList.remove("dragging");
 
   document.querySelectorAll(".admin-obra").forEach(obra => {
     obra.classList.remove("drag-over");
   });
-
+document.removeEventListener("wheel", controlarRuedaDuranteArrastre);
+document.body.classList.remove("arrastrando-obra");
   obraArrastrada = null;
 }
 
