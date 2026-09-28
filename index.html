@@ -1748,11 +1748,14 @@ async function soltarObra(event) {
   await guardarOrdenObras();
 }
 function controlarRuedaDuranteArrastre(event) {
+  if (!obraArrastrada) return;
+
   const contenedor = document.querySelector("#adminModal .modal-content");
 
   if (!contenedor) return;
 
-  contenedor.scrollTop += event.deltaY * 3;
+  contenedor.scrollTop += event.deltaY;
+  event.preventDefault();
 }
 function terminarArrastre(event) {
   event.currentTarget.classList.remove("dragging");
