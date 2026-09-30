@@ -1753,23 +1753,16 @@ async function soltarObra(event) {
 function controlarRuedaDuranteArrastre(event) {
   if (!obraArrastrada) return;
 
-  const contenedor = document.querySelector("#adminModal .modal-content");
+  const contenedor =
+    document.querySelector("#adminModal .modal-content") ||
+    document.querySelector("#listaObrasAdmin");
 
   if (!contenedor) return;
 
-  const maxScroll = contenedor.scrollHeight - contenedor.clientHeight;
+  event.preventDefault();
+  event.stopPropagation();
 
   contenedor.scrollTop += event.deltaY;
-
-  if (contenedor.scrollTop < 0) {
-    contenedor.scrollTop = 0;
-  }
-
-  if (contenedor.scrollTop > maxScroll) {
-    contenedor.scrollTop = maxScroll;
-  }
-
-  event.preventDefault();
 }
 
 function terminarArrastre(event) {
