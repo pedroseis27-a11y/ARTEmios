@@ -1690,9 +1690,9 @@ data.forEach(obra => {
 cargarObrasDesdeSupabase();
 let obraArrastrada = null;
 
-
 function iniciarArrastre(event) {
   obraArrastrada = event.currentTarget;
+
   event.currentTarget.classList.add("dragging");
 
   event.dataTransfer.effectAllowed = "move";
@@ -1700,11 +1700,13 @@ function iniciarArrastre(event) {
     "text/plain",
     event.currentTarget.dataset.id
   );
+
   document.body.classList.add("arrastrando-obra");
- document.addEventListener("wheel", controlarRuedaDuranteArrastre, {
-  passive: false,
-  capture: true
-});
+
+  document.addEventListener("wheel", controlarRuedaDuranteArrastre, {
+    passive: false,
+    capture: true
+  });
 }
 
 function permitirSoltar(event) {
@@ -1747,6 +1749,7 @@ async function soltarObra(event) {
 
   await guardarOrdenObras();
 }
+
 function controlarRuedaDuranteArrastre(event) {
   if (!obraArrastrada) return;
 
@@ -1754,20 +1757,40 @@ function controlarRuedaDuranteArrastre(event) {
 
   if (!contenedor) return;
 
+  const maxScroll = contenedor.scrollHeight - contenedor.clientHeight;
+
   contenedor.scrollTop += event.deltaY;
+
+  if (contenedor.scrollTop < 0) {
+    contenedor.scrollTop = 0;
+  }
+
+  if (contenedor.scrollTop > maxScroll) {
+    contenedor.scrollTop = maxScroll;
+  }
+
   event.preventDefault();
 }
+
 function terminarArrastre(event) {
   event.currentTarget.classList.remove("dragging");
 
   document.querySelectorAll(".admin-obra").forEach(obra => {
     obra.classList.remove("drag-over");
   });
-document.removeEventListener("wheel", controlarRuedaDuranteArrastre);
-document.body.classList.remove("arrastrando-obra");
+
+  document.removeEventListener(
+    "wheel",
+    controlarRuedaDuranteArrastre,
+    {
+      capture: true
+    }
+  );
+
+  document.body.classList.remove("arrastrando-obra");
+
   obraArrastrada = null;
 }
-
 async function guardarOrdenObras() {
   const lista = document.getElementById("listaObrasAdmin");
   const obras = [...lista.querySelectorAll(".admin-obra")];
