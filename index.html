@@ -1213,6 +1213,20 @@
   border-color: #756246;
   box-shadow: 0 0 0 2px rgba(117, 98, 70, 0.15);
 }
+  .admin-obra {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+.admin-obra button,
+.admin-obra input,
+.admin-obra textarea,
+.admin-obra select,
+.admin-obra label {
+  user-select: text;
+  -webkit-user-select: text;
+}  
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link
@@ -1689,73 +1703,90 @@ data.forEach(obra => {
 
 cargarObrasDesdeSupabase();
 let obraArrastrada = null;
+let punteroArrastreActivo = false;
 
-function iniciarArrastre(event) {
-  obraArrastrada = event.currentTarget;
+function iniciarArrastrePuntero(event) {
+  // Solo botón izquierdo
+  if (event.button !== 0) return;
 
-  event.currentTarget.classList.add("dragging");
-
-  event.dataTransfer.effectAllowed = "move";
-  event.dataTransfer.setData(
-    "text/plain",
-    event.currentTarget.dataset.id
-  );
-
-  document.body.classList.add("arrastrando-obra");
-
-  document.addEventListener("wheel", controlarRuedaDuranteArrastre, {
-    passive: false,
-    capture: true
-  });
-}
-
-function permitirSoltar(event) {
-  event.preventDefault();
-
-  const destino = event.currentTarget;
-
-  if (destino !== obraArrastrada) {
-    destino.classList.add("drag-over");
-  }
-
-  event.dataTransfer.dropEffect = "move";
-}
-
-function salirDeZona(event) {
-  event.currentTarget.classList.remove("drag-over");
-}
-
-async function soltarObra(event) {
-  event.preventDefault();
-
-  const destino = event.currentTarget;
-  destino.classList.remove("drag-over");
-
-  if (!obraArrastrada || destino === obraArrastrada) {
+  // No iniciar arrastre al pulsar botones o campos del formulario
+  if (
+    event.target.closest(
+      "button, input, textarea, select, label"
+    )
+  ) {
     return;
   }
 
-  const lista = document.getElementById("listaObrasAdmin");
-  const elementos = [...lista.querySelectorAll(".admin-obra")];
+  obraArrastrada = event.currentTarget;
+  punteroArrastreActivo = true;
 
-  const posicionOrigen = elementos.indexOf(obraArrastrada);
-  const posicionDestino = elementos.indexOf(destino);
+  obraArrastrada.classList.add("dragging");
 
-  if (posicionOrigen < posicionDestino) {
-    lista.insertBefore(obraArrastrada, destino.nextSibling);
-  } else {
-    lista.insertBefore(obraArrastrada, destino);
+  // Evita seleccionar texto mientras arrastramos
+  event.preventDefault();
+
+  document.body.classList.add("arrastrando-obra");
+
+  document.addEventListener(
+    "pointermove",
+    moverObraConPuntero
+  );
+
+  document.addEventListener(
+    "pointerup",
+    terminarArrastrePuntero
+  );
+
+  document.addEventListener(
+    "pointercancel",
+    terminarArrastrePuntero
+  );
+
+  document.addEventListener(
+    "wheel",
+    controlarRuedaDuranteArrastre,
+    {
+      passive: false,
+      capture: true
+    }
+  );
+}
+
+function moverObraConPuntero(event) {
+  if (!punteroArrastreActivo || !obraArrastrada) {
+    return;
   }
 
-  await guardarOrdenObras();
+  const elemento = document.elementFromPoint(
+    event.clientX,
+    event.clientY
+  );
+
+  const destino = elemento?.closest(".admin-obra");
+
+  document.querySelectorAll(".admin-obra").forEach(obra => {
+    obra.classList.remove("drag-over");
+  });
+
+  if (
+    destino &&
+    destino !== obraArrastrada &&
+    document
+      .getElementById("listaObrasAdmin")
+      ?.contains(destino)
+  ) {
+    destino.classList.add("drag-over");
+  }
 }
 
 function controlarRuedaDuranteArrastre(event) {
-  if (!obraArrastrada) return;
+  if (!punteroArrastreActivo || !obraArrastrada) {
+    return;
+  }
 
   const contenedor =
-    document.querySelector("#adminModal .modal-content") ||
-    document.querySelector("#listaObrasAdmin");
+    document.querySelector("#adminModal .modal-content");
 
   if (!contenedor) return;
 
@@ -1765,12 +1796,81 @@ function controlarRuedaDuranteArrastre(event) {
   contenedor.scrollTop += event.deltaY;
 }
 
-function terminarArrastre(event) {
-  event.currentTarget.classList.remove("dragging");
+async function terminarArrastrePuntero(event) {
+  if (!punteroArrastreActivo || !obraArrastrada) {
+    return;
+  }
+
+  const obra = obraArrastrada;
+
+  const elemento = document.elementFromPoint(
+    event.clientX,
+    event.clientY
+  );
+
+  const destino = elemento?.closest(".admin-obra");
+
+  const lista = document.getElementById(
+    "listaObrasAdmin"
+  );
+
+  if (
+    destino &&
+    destino !== obra &&
+    lista &&
+    lista.contains(destino)
+  ) {
+    const elementos = [
+      ...lista.querySelectorAll(".admin-obra")
+    ];
+
+    const posicionOrigen =
+      elementos.indexOf(obra);
+
+    const posicionDestino =
+      elementos.indexOf(destino);
+
+    if (posicionOrigen < posicionDestino) {
+      lista.insertBefore(
+        obra,
+        destino.nextSibling
+      );
+    } else {
+      lista.insertBefore(
+        obra,
+        destino
+      );
+    }
+
+    await guardarOrdenObras();
+  }
+
+  limpiarArrastrePuntero();
+}
+
+function limpiarArrastrePuntero() {
+  if (obraArrastrada) {
+    obraArrastrada.classList.remove("dragging");
+  }
 
   document.querySelectorAll(".admin-obra").forEach(obra => {
     obra.classList.remove("drag-over");
   });
+
+  document.removeEventListener(
+    "pointermove",
+    moverObraConPuntero
+  );
+
+  document.removeEventListener(
+    "pointerup",
+    terminarArrastrePuntero
+  );
+
+  document.removeEventListener(
+    "pointercancel",
+    terminarArrastrePuntero
+  );
 
   document.removeEventListener(
     "wheel",
@@ -1783,6 +1883,7 @@ function terminarArrastre(event) {
   document.body.classList.remove("arrastrando-obra");
 
   obraArrastrada = null;
+  punteroArrastreActivo = false;
 }
 async function guardarOrdenObras() {
   const lista = document.getElementById("listaObrasAdmin");
@@ -2042,14 +2143,12 @@ function cancelarEdicionObra(id) {
   data.forEach((obra) => {
     const item = document.createElement("div");
     item.className = "admin-obra";
-    item.draggable = true;
-    item.dataset.id = obra.id;
+   item.dataset.id = obra.id;
 
-    item.addEventListener("dragstart", iniciarArrastre);
-    item.addEventListener("dragover", permitirSoltar);
-    item.addEventListener("dragleave", salirDeZona);
-    item.addEventListener("drop", soltarObra);
-    item.addEventListener("dragend", terminarArrastre);
+item.addEventListener(
+  "pointerdown",
+  iniciarArrastrePuntero
+);
 
     item.innerHTML = `
       <div class="admin-obra-header">
