@@ -2800,7 +2800,22 @@ if (fotoBancoSeleccionada) {
   }
 
   alert("✅ Obra añadida correctamente");
+if (fotoBancoSeleccionada) {
 
+  await supabaseClient
+    .storage
+    .from("obras")
+    .remove([
+      fotoBancoSeleccionada.storage_path
+    ]);
+
+  await supabaseClient
+    .from("banco_fotos")
+    .delete()
+    .eq("id", fotoBancoSeleccionada.id);
+
+  fotoBancoSeleccionada = null;
+}
   document.getElementById("formularioObra").style.display = "none";
    document.getElementById("obraNombre").value = "";
 document.getElementById("obraDescripcion").value = "";
