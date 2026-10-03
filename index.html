@@ -2307,7 +2307,30 @@ function abrirRecortador(input) {
     });
   };
 }
+function abrirRecortadorConArchivo(archivo) {
+  console.log("RECORTADOR CON FOTO DEL BANCO");
 
+  imagenRecortada = null;
+
+  const url = URL.createObjectURL(archivo);
+  const imagen = document.getElementById("imagenParaRecortar");
+
+  imagen.src = url;
+
+  document.getElementById("cropModal").classList.add("open");
+
+  imagen.onload = () => {
+    if (cropper) {
+      cropper.destroy();
+    }
+
+    cropper = new Cropper(imagen, {
+      aspectRatio: NaN,
+      viewMode: 1,
+      autoCropArea: 1
+    });
+  };
+}
 function cerrarRecortador() {
   document.getElementById("cropModal").classList.remove("open");
 
@@ -2496,7 +2519,37 @@ async function subirFotosAlBanco(input) {
   alert("✅ Fotos añadidas al banco");
 }
 
+async function prepararFotoBancoParaRecortar(foto) {
+  try {
+    const respuesta = await fetch(foto.imagen);
 
+    if (!respuesta.ok) {
+      throw new Error("No se pudo descargar la imagen");
+    }
+
+    const blob = await respuesta.blob();
+
+    const archivo = new File(
+      [blob],
+      foto.nombre_archivo,
+      {
+        type: blob.type
+      }
+    );
+
+    abrirRecortadorConArchivo(archivo);
+
+  } catch (error) {
+    console.error(
+      "Error preparando foto del banco:",
+      error
+    );
+
+    alert(
+      "❌ No se ha podido preparar la foto para recortarla"
+    );
+  }
+}
 async function seleccionarFotoBanco(id) {
   const { data, error } =
     await supabaseClient
@@ -2529,17 +2582,16 @@ async function seleccionarFotoBanco(id) {
   ).style.display = "block";
 
   // Quitamos cualquier imagen recortada
-  imagenRecortada = null;
+ imagenRecortada = null;
 
-  // Quitamos archivo seleccionado manualmente
-  const input =
-    document.getElementById("obraImagen");
+// Quitamos archivo seleccionado manualmente
+const input =
+  document.getElementById("obraImagen");
 
-  if (input) {
-    input.value = "";
-    input.style.display = "none";
-  }
-
+if (input) {
+  input.value = "";
+  input.style.display = "block";
+}
   // Creamos/actualizamos indicador visual
   let indicador =
     document.getElementById(
@@ -2569,14 +2621,21 @@ async function seleccionarFotoBanco(id) {
         alt="Foto seleccionada"
       >
 
-      <p>${data.nombre_archivo}</p>
+     <p>${data.nombre_archivo}</p>
 
-      <button
-        type="button"
-        onclick="quitarFotoBancoSeleccionada()"
-      >
-        ❌ Cambiar foto
-      </button>
+<button
+  type="button"
+  onclick="prepararFotoBancoParaRecortar(fotoBancoSeleccionada)"
+>
+  ✂️ Recortar foto
+</button>
+
+<button
+  type="button"
+  onclick="quitarFotoBancoSeleccionada()"
+>
+  ❌ Cambiar foto
+</button>
     </div>
   `;
 }
