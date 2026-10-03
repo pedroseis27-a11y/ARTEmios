@@ -1272,6 +1272,34 @@
   <span>＋</span>
   Añadir nueva obra
 </button>
+  <button class="add-art-button" onclick="abrirBancoFotos()">
+  <span>📸</span>
+  Banco de fotos
+</button>
+
+<div id="bancoFotosPanel" style="display: none;">
+
+  <h3>📸 Banco de fotos</h3>
+
+  <p>
+    Guarda aquí las imágenes que todavía no quieras publicar.
+  </p>
+
+  <input
+    type="file"
+    id="bancoFotosInput"
+    accept="image/*"
+    multiple
+    onchange="subirFotosAlBanco(this)"
+  >
+
+  <div id="bancoFotosGrid"></div>
+
+  <button onclick="cerrarBancoFotos()">
+    Cerrar banco de fotos
+  </button>
+
+</div>
 
 <div id="formularioObra" style="display: none;">
 
@@ -2048,30 +2076,44 @@ const archivoImagen = imagenRecortada || document.getElementById(`editarImagen-$
   let imagen = obraActual.imagen;
 
   if (archivoImagen) {
-    const nombreArchivo = Date.now() + "_" + archivoImagen.name
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-zA-Z0-9._-]/g, "_");
+ const nombreArchivo =
+  Date.now() +
+  "_" +
+  archivoImagen.name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "_");
 
-    const { error: uploadError } = await supabaseClient
-      .storage
-      .from("obras")
-      .upload(nombreArchivo, archivoImagen);
+const { error: uploadError } =
+  await supabaseClient
+    .storage
+    .from("obras")
+    .upload(
+      nombreArchivo,
+      archivoImagen
+    );
 
-    if (uploadError) {
-      console.error("Error subiendo imagen:", uploadError);
-      alert("❌ No se ha podido subir la nueva imagen");
-      return;
-    }
+if (uploadError) {
+  console.error(
+    "Error subiendo imagen:",
+    uploadError
+  );
 
-    const { data: urlData } = supabaseClient
-      .storage
-      .from("obras")
-      .getPublicUrl(nombreArchivo);
+  alert(
+    "❌ No se ha podido subir la imagen"
+  );
 
-    imagen = urlData.publicUrl;
-  }
+  return;
+}
 
+const { data: urlData } =
+  supabaseClient
+    .storage
+    .from("obras")
+    .getPublicUrl(nombreArchivo);
+
+imagen = urlData.publicUrl;
+}
   const { error } = await supabaseClient
     .from("obras")
     .update({
@@ -2278,6 +2320,347 @@ function cerrarRecortador() {
     alert("✅ Imagen recortada correctamente");
   }, "image/jpeg", 0.92);
 }
+  let fotoBancoSeleccionada = null;
+
+function abrirBancoFotos() {
+  document.getElementById("bancoFotosPanel").style.display = "block";
+  cargarBancoFotos();
+}
+
+function cerrarBancoFotos() {
+  document.getElementById("bancoFotosPanel").style.display = "none";
+}
+
+async function cargarBancoFotos() {
+  const contenedor = document.getElementById("bancoFotosGrid");
+
+  if (!contenedor) return;
+
+  contenedor.innerHTML = "<p>📸 Cargando fotos...</p>";
+
+  const { data, error } = await supabaseClient
+    .from("banco_fotos")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error cargando banco de fotos:", error);
+    contenedor.innerHTML =
+      "<p>❌ No se han podido cargar las fotos.</p>";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    contenedor.innerHTML =
+      "<p>📭 El banco de fotos está vacío.</p>";
+    return;
+  }
+
+  contenedor.innerHTML = "";
+
+  data.forEach(foto => {
+    const tarjeta = document.createElement("div");
+
+    tarjeta.className = "foto-banco-item";
+
+    tarjeta.innerHTML = `
+      <img
+        src="${foto.imagen}"
+        alt="${foto.nombre_archivo}"
+      >
+
+      <p>${foto.nombre_archivo}</p>
+
+      <button
+        onclick="seleccionarFotoBanco(${foto.id})"
+      >
+        ✅ Usar esta foto
+      </button>
+
+      <button
+        onclick="eliminarFotoBanco(${foto.id})"
+      >
+        🗑️ Eliminar
+      </button>
+    `;
+
+    contenedor.appendChild(tarjeta);
+  });
+}
+
+
+async function subirFotosAlBanco(input) {
+  const archivos = [...input.files];
+
+  if (!archivos.length) return;
+
+  for (const archivo of archivos) {
+
+    const nombreArchivo =
+      Date.now() +
+      "_" +
+      Math.random().toString(36).substring(2, 8) +
+      "_" +
+      archivo.name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+    const { error: uploadError } =
+      await supabaseClient
+        .storage
+        .from("obras")
+        .upload(
+          "banco/" + nombreArchivo,
+          archivo
+        );
+
+    if (uploadError) {
+      console.error(
+        "Error subiendo foto al banco:",
+        uploadError
+      );
+
+      alert(
+        "❌ No se ha podido subir " +
+        archivo.name
+      );
+
+      continue;
+    }
+
+    const { data: urlData } =
+      supabaseClient
+        .storage
+        .from("obras")
+        .getPublicUrl(
+          "banco/" + nombreArchivo
+        );
+
+    const imagen =
+      urlData.publicUrl;
+
+    const { error: bancoError } =
+      await supabaseClient
+        .from("banco_fotos")
+        .insert([
+          {
+            nombre_archivo: archivo.name,
+            imagen: imagen,
+            storage_path:
+              "banco/" + nombreArchivo
+          }
+        ]);
+
+    if (bancoError) {
+      console.error(
+        "Error guardando foto en banco:",
+        bancoError
+      );
+
+      // Si falla la tabla, eliminamos también
+      // el archivo que acabamos de subir.
+      await supabaseClient
+        .storage
+        .from("obras")
+        .remove([
+          "banco/" + nombreArchivo
+        ]);
+
+      alert(
+        "❌ No se ha podido guardar " +
+        archivo.name
+      );
+    }
+  }
+
+  input.value = "";
+
+  await cargarBancoFotos();
+
+  alert("✅ Fotos añadidas al banco");
+}
+
+
+async function seleccionarFotoBanco(id) {
+  const { data, error } =
+    await supabaseClient
+      .from("banco_fotos")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+  if (error) {
+    console.error(
+      "Error obteniendo foto del banco:",
+      error
+    );
+
+    alert(
+      "❌ No se ha podido seleccionar la foto"
+    );
+
+    return;
+  }
+
+  fotoBancoSeleccionada = data;
+
+  // Ocultamos el banco
+  cerrarBancoFotos();
+
+  // Abrimos el formulario de nueva obra
+  document.getElementById(
+    "formularioObra"
+  ).style.display = "block";
+
+  // Quitamos cualquier imagen recortada
+  imagenRecortada = null;
+
+  // Quitamos archivo seleccionado manualmente
+  const input =
+    document.getElementById("obraImagen");
+
+  if (input) {
+    input.value = "";
+    input.style.display = "none";
+  }
+
+  // Creamos/actualizamos indicador visual
+  let indicador =
+    document.getElementById(
+      "fotoBancoSeleccionada"
+    );
+
+  if (!indicador) {
+
+    indicador =
+      document.createElement("div");
+
+    indicador.id =
+      "fotoBancoSeleccionada";
+
+    input.parentNode.insertBefore(
+      indicador,
+      input
+    );
+  }
+
+  indicador.innerHTML = `
+    <div>
+      <strong>📸 Foto seleccionada del banco</strong>
+
+      <img
+        src="${data.imagen}"
+        alt="Foto seleccionada"
+      >
+
+      <p>${data.nombre_archivo}</p>
+
+      <button
+        type="button"
+        onclick="quitarFotoBancoSeleccionada()"
+      >
+        ❌ Cambiar foto
+      </button>
+    </div>
+  `;
+}
+
+
+function quitarFotoBancoSeleccionada() {
+
+  fotoBancoSeleccionada = null;
+
+  const indicador =
+    document.getElementById(
+      "fotoBancoSeleccionada"
+    );
+
+  if (indicador) {
+    indicador.remove();
+  }
+
+  const input =
+    document.getElementById("obraImagen");
+
+  if (input) {
+    input.style.display = "block";
+  }
+}
+
+
+async function eliminarFotoBanco(id) {
+
+  const confirmar = confirm(
+    "⚠️ ¿Seguro que quieres eliminar esta foto del banco?"
+  );
+
+  if (!confirmar) return;
+
+  const { data, error } =
+    await supabaseClient
+      .from("banco_fotos")
+      .select("storage_path")
+      .eq("id", id)
+      .single();
+
+  if (error) {
+    console.error(
+      "Error obteniendo foto:",
+      error
+    );
+
+    alert(
+      "❌ No se ha podido eliminar la foto"
+    );
+
+    return;
+  }
+
+  const { error: storageError } =
+    await supabaseClient
+      .storage
+      .from("obras")
+      .remove([
+        data.storage_path
+      ]);
+
+  if (storageError) {
+    console.error(
+      "Error eliminando archivo:",
+      storageError
+    );
+
+    alert(
+      "❌ No se ha podido eliminar el archivo"
+    );
+
+    return;
+  }
+
+  const { error: deleteError } =
+    await supabaseClient
+      .from("banco_fotos")
+      .delete()
+      .eq("id", id);
+
+  if (deleteError) {
+    console.error(
+      "Error eliminando registro:",
+      deleteError
+    );
+
+    alert(
+      "❌ No se ha podido eliminar el registro"
+    );
+
+    return;
+  }
+
+  await cargarBancoFotos();
+
+  alert("✅ Foto eliminada");
+}
   async function crearObra() {
   const nombre = document.getElementById("obraNombre").value;
   const descripcion = document.getElementById("obraDescripcion").value;
@@ -2285,13 +2668,14 @@ function cerrarRecortador() {
   const tecnica = document.getElementById("obraTecnica").value;
   const categoria = document.getElementById("obraCategoria").value;
   const fecha = document.getElementById("obraFecha").value;
-  const archivoImagen = imagenRecortada || document.getElementById("obraImagen").files[0];
+ const archivoImagen =
+  imagenRecortada ||
+  document.getElementById("obraImagen").files[0];
 
-  if (!archivoImagen) {
-    alert("❌ Selecciona una imagen");
-    return;
-  }
-
+if (!archivoImagen && !fotoBancoSeleccionada) {
+  alert("❌ Selecciona una imagen o una foto del banco");
+  return;
+}
   const { data: ultimaObra, error: ordenError } = await supabaseClient
     .from("obras")
     .select("orden")
@@ -2307,28 +2691,89 @@ function cerrarRecortador() {
 
   const nuevoOrden = ultimaObra ? ultimaObra.orden + 1 : 1;
 
-  const nombreArchivo = Date.now() + "_" + archivoImagen.name
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-zA-Z0-9._-]/g, "_");
+let nombreArchivo;
+let imagen;
 
-  const { error: uploadError } = await supabaseClient
-    .storage
-    .from("obras")
-    .upload(nombreArchivo, archivoImagen);
+if (fotoBancoSeleccionada) {
 
-  if (uploadError) {
-    console.error("Error subiendo imagen:", uploadError);
-    alert("❌ No se ha podido subir la imagen");
+  nombreArchivo =
+    Date.now() +
+    "_" +
+    fotoBancoSeleccionada.nombre_archivo
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+  const { error: copyError } =
+    await supabaseClient
+      .storage
+      .from("obras")
+      .copy(
+        fotoBancoSeleccionada.storage_path,
+        nombreArchivo
+      );
+
+  if (copyError) {
+    console.error(
+      "Error copiando foto del banco:",
+      copyError
+    );
+
+    alert(
+      "❌ No se ha podido preparar la foto del banco"
+    );
+
     return;
   }
 
-  const { data: urlData } = supabaseClient
-    .storage
-    .from("obras")
-    .getPublicUrl(nombreArchivo);
+  const { data: urlData } =
+    supabaseClient
+      .storage
+      .from("obras")
+      .getPublicUrl(nombreArchivo);
 
-  const imagen = urlData.publicUrl;
+  imagen = urlData.publicUrl;
+
+} else {
+
+  nombreArchivo =
+    Date.now() +
+    "_" +
+    archivoImagen.name
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+  const { error: uploadError } =
+    await supabaseClient
+      .storage
+      .from("obras")
+      .upload(
+        nombreArchivo,
+        archivoImagen
+      );
+
+  if (uploadError) {
+    console.error(
+      "Error subiendo imagen:",
+      uploadError
+    );
+
+    alert(
+      "❌ No se ha podido subir la imagen"
+    );
+
+    return;
+  }
+
+  const { data: urlData } =
+    supabaseClient
+      .storage
+      .from("obras")
+      .getPublicUrl(nombreArchivo);
+
+  imagen = urlData.publicUrl;
+}
   const stock = document.getElementById("obraStock").value;
 
   const { data, error } = await supabaseClient
