@@ -2938,10 +2938,10 @@ console.log("RUTA QUE SE INTENTA COPIAR:", fotoBancoSeleccionada.storage_path);
     await supabaseClient
       .storage
       .from("obras")
-      .copy(
-        fotoBancoSeleccionada.storage_path,
-        nombreArchivo
-      );
+     .copy(
+  "obras/" + fotoBancoSeleccionada.storage_path,
+  nombreArchivo
+);
 
   if (copyError) {
     console.error(
