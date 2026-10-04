@@ -1304,6 +1304,10 @@
   <span>＋</span>
   Añadir nueva obra
 </button>
+  <button class="add-art-button" onclick="mostrarFormularioPrint()">
+  <span>＋</span>
+  Añadir nuevo print
+</button>
   <button class="add-art-button" onclick="abrirBancoFotos()">
   <span>📸</span>
   Banco de fotos
@@ -1365,6 +1369,47 @@
 
   <button onclick="crearObra()">
     💾 Guardar obra
+  </button>
+
+</div>
+  <div id="formularioPrint" style="display: none;">
+
+  <h3>Nuevo print</h3>
+
+  <input
+    type="text"
+    id="printNombre"
+    placeholder="Nombre del print"
+  >
+
+  <textarea
+    id="printDescripcion"
+    placeholder="Descripción"
+  ></textarea>
+
+  <input
+    type="number"
+    id="printPrecio"
+    placeholder="Precio (€)"
+  >
+
+  <input
+    type="file"
+    id="printImagen"
+    accept="image/*"
+    onchange="abrirRecortador(this)"
+    style="display: block;"
+  >
+
+  <input
+    type="number"
+    id="printStock"
+    placeholder="Stock"
+    value="1"
+  >
+
+  <button onclick="crearPrint()">
+    💾 Guardar print
   </button>
 
 </div>
@@ -2383,6 +2428,18 @@ cargarBancoFotosParaEditar();
 
   imagenRecortada = null;
 }
+  function mostrarFormularioPrint() {
+
+  document.getElementById("formularioPrint").style.display = "block";
+
+  document.getElementById("printNombre").value = "";
+  document.getElementById("printDescripcion").value = "";
+  document.getElementById("printPrecio").value = "";
+  document.getElementById("printImagen").value = "";
+  document.getElementById("printStock").value = "1";
+
+  imagenRecortada = null;
+}
   let cropper = null;
 let imagenRecortada = null;
 
@@ -3124,6 +3181,97 @@ imagenRecortada = null;
 
   cargarObrasDesdeSupabase();
   cargarObrasAdmin();
+}
+  async function crearPrint() {
+
+  const nombre =
+    document.getElementById("printNombre").value;
+
+  const descripcion =
+    document.getElementById("printDescripcion").value;
+
+  const precio =
+    document.getElementById("printPrecio").value;
+
+  const stock =
+    document.getElementById("printStock").value;
+
+  const archivoImagen =
+    imagenRecortada ||
+    document.getElementById("printImagen").files[0];
+
+  if (!archivoImagen) {
+    alert("❌ Selecciona una imagen para el print");
+    return;
+  }
+
+  const nombreArchivo =
+    Date.now() +
+    "_" +
+    archivoImagen.name
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+  const { error: uploadError } =
+    await supabaseClient
+      .storage
+      .from("obras")
+      .upload(
+        nombreArchivo,
+        archivoImagen
+      );
+
+  if (uploadError) {
+    console.error(
+      "Error subiendo imagen:",
+      uploadError
+    );
+
+    alert("❌ No se ha podido subir la imagen");
+    return;
+  }
+
+  const { data: urlData } =
+    supabaseClient
+      .storage
+      .from("obras")
+      .getPublicUrl(nombreArchivo);
+
+  const imagen = urlData.publicUrl;
+
+  const { error } =
+    await supabaseClient
+      .from("prints")
+      .insert([
+        {
+          nombre: nombre,
+          descripcion: descripcion,
+          precio: precio,
+          imagen: imagen,
+          stock: stock
+        }
+      ]);
+
+  if (error) {
+    console.error(
+      "Error creando print:",
+      error
+    );
+
+    alert("❌ No se ha podido guardar el print");
+    return;
+  }
+
+  alert("✅ Print añadido correctamente");
+
+  document.getElementById("printNombre").value = "";
+  document.getElementById("printDescripcion").value = "";
+  document.getElementById("printPrecio").value = "";
+  document.getElementById("printStock").value = "1";
+  document.getElementById("printImagen").value = "";
+
+  imagenRecortada = null;
 }
   async function iniciarSesionAdmin() {
   const email = document.getElementById("adminEmail").value;
