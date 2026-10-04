@@ -2735,6 +2735,10 @@ async function seleccionarFotoBanco(id) {
   document.getElementById(
     "formularioObra"
   ).style.display = "block";
+   document.getElementById("formularioObra").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 
   // Quitamos cualquier imagen recortada
  imagenRecortada = null;
