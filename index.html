@@ -1702,9 +1702,7 @@ comprobarSupabase();
 console.log("Obras cargadas desde Supabase:", data);
 
 data.forEach(obra => {
-  if (stock[obra.nombre] === undefined) {
-    stock[obra.nombre] = obra.stock;
-  }
+ stock[obra.nombre] = obra.stock;
 });
 
 localStorage.setItem(
