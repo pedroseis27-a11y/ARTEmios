@@ -1651,6 +1651,9 @@ const supabaseClient  = window.supabase.createClient(
 );
   // Registrar visita
 async function registrarVisita() {
+  if (localStorage.getItem("artemiosPropietario") === "true") {
+    return;
+  } 
   let visitanteId = localStorage.getItem("artemiosVisitanteId");
 
   if (!visitanteId) {
