@@ -2212,6 +2212,17 @@ async function eliminarObra(id) {
 function cancelarEdicionObra(id) {
   document.getElementById(`editar-admin-${id}`).style.display = "none";
 }
+  async function cargarEstadisticasVisitas() {
+  const { data, error } = await supabaseClient
+    .rpc("obtener_estadisticas_visitas");
+
+  if (error) {
+    console.error("Error cargando estadísticas:", error);
+    return;
+  }
+
+  console.log("Estadísticas de visitas:", data);
+}
   async function cargarObrasAdmin() {
   const { data, error } = await supabaseClient
     .from("obras")
