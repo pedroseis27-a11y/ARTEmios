@@ -2079,7 +2079,7 @@ async function editarObra(id) {
   const fecha = document.getElementById(`editarFecha-${id}`).value;
   const stock = document.getElementById(`editarStock-${id}`).value;
 const archivoImagen = imagenRecortada || document.getElementById(`editarImagen-${id}`).files[0];
-
+const fotoBanco = window.fotoBancoParaEditar || null;
   const { data: obraActual, error: obraError } = await supabaseClient
     .from("obras")
     .select("imagen")
@@ -2094,11 +2094,13 @@ const archivoImagen = imagenRecortada || document.getElementById(`editarImagen-$
 
   let imagen = obraActual.imagen;
 
-  if (archivoImagen) {
- const nombreArchivo =
+ if (archivoImagen || fotoBanco) {
+const archivoFinal = archivoImagen || fotoBanco;
+
+const nombreArchivo =
   Date.now() +
   "_" +
-  archivoImagen.name
+  archivoFinal.name
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -2109,7 +2111,7 @@ const { error: uploadError } =
     .from("obras")
     .upload(
       nombreArchivo,
-      archivoImagen
+      archivoFinal
     );
 
 if (uploadError) {
@@ -2151,7 +2153,8 @@ imagen = urlData.publicUrl;
     alert("❌ No se han podido guardar los cambios");
     return;
   }
-
+window.fotoBancoParaEditar = null;
+imagenRecortada = null;
   alert("✅ Cambios guardados correctamente");
 
   cargarObrasDesdeSupabase();
@@ -2247,7 +2250,12 @@ item.addEventListener(
 
         <label>Cambiar imagen</label>
         <input type="file" id="editarImagen-${obra.id}" accept="image/*" onchange="abrirRecortador(this)">
-
+<button
+  type="button"
+  onclick="abrirBancoParaEditar(${obra.id})"
+>
+  📸 Sustituir por una foto del banco
+</button>
         <label>Stock</label>
         <input type="number" id="editarStock-${obra.id}" placeholder="Stock">
 
@@ -2266,6 +2274,15 @@ item.addEventListener(
 
 function cerrarAdmin() {
   document.getElementById("adminModal").classList.remove("open");
+}
+  function abrirBancoParaEditar(idObra) {
+window.obraQueSeEstaEditando = idObra;
+
+const panel = document.getElementById("bancoFotosPanel");
+
+panel.style.display = "block";
+
+cargarBancoFotosParaEditar();
 }
  function mostrarFormularioObra() {
   document.getElementById("formularioObra").style.display = "block";
@@ -2334,6 +2351,44 @@ function abrirRecortadorConArchivo(archivo) {
       autoCropArea: 1
     });
   };
+}
+  async function sustituirImagenObraPorFotoBanco(idFoto) {
+const { data: foto, error } = await supabaseClient
+.from("banco_fotos")
+.select("*")
+.eq("id", idFoto)
+.single();
+
+if (error || !foto) {
+alert("❌ No se ha podido obtener la foto del banco.");
+return;
+}
+
+try {
+const respuesta = await fetch(foto.imagen);
+
+if (!respuesta.ok) {
+  throw new Error("No se pudo descargar la imagen.");
+}
+
+const blob = await respuesta.blob();
+
+const archivo = new File(
+  [blob],
+  foto.nombre_archivo || "foto-banco.jpg",
+  { type: blob.type }
+);
+
+window.fotoBancoParaEditar = foto;
+
+cerrarBancoFotos();
+
+abrirRecortadorConArchivo(archivo);
+
+} catch (error) {
+console.error("Error preparando la foto:", error);
+alert("❌ No se ha podido preparar la foto para recortarla.");
+}
 }
 function cerrarRecortador() {
   document.getElementById("cropModal").classList.remove("open");
@@ -2428,6 +2483,51 @@ async function cargarBancoFotos() {
 
     contenedor.appendChild(tarjeta);
   });
+}
+  async function cargarBancoFotosParaEditar() {
+const contenedor = document.getElementById("bancoFotosGrid");
+
+if (!contenedor) return;
+
+contenedor.innerHTML = "<p>📸 Cargando fotos...</p>";
+
+const { data, error } = await supabaseClient
+.from("banco_fotos")
+.select("*")
+.order("created_at", { ascending: false });
+
+if (error) {
+console.error("Error cargando fotos:", error);
+contenedor.innerHTML = "<p>❌ No se han podido cargar las fotos.</p>";
+return;
+}
+
+if (!data || data.length === 0) {
+contenedor.innerHTML = "<p>📭 El banco de fotos está vacío.</p>";
+return;
+}
+
+contenedor.innerHTML = "";
+
+data.forEach(foto => {
+const tarjeta = document.createElement("div");
+tarjeta.className = "foto-banco-item";
+
+tarjeta.innerHTML = `
+  <img src="${foto.imagen}" alt="${foto.nombre_archivo}">
+  <p>${foto.nombre_archivo}</p>
+
+  <button
+    type="button"
+    onclick="sustituirImagenObraPorFotoBanco(${foto.id})"
+  >
+    ✅ Sustituir imagen de la obra
+  </button>
+`;
+
+contenedor.appendChild(tarjeta);
+
+});
 }
 
 
