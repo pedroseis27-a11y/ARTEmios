@@ -3172,7 +3172,8 @@ document.getElementById("adminPanel").style.display = "block";
   let stock = JSON.parse(localStorage.getItem("artemiosStock")) || {
     ...stockInicial
   };
-
+stock["Print de prueba"] = 1;
+localStorage.setItem("artemiosStock", JSON.stringify(stock));
 
   /* AÑADIR AL CARRITO */
 
