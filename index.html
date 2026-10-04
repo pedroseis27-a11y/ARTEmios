@@ -1287,6 +1287,19 @@
   <h3>Panel de administración</h3>
 
   <p>🔐 Has iniciado sesión correctamente.</p>
+  <div id="estadisticasVisitas" class="estadisticas-visitas">
+  <h3>📊 Visitas a ARTEmios</h3>
+
+  <p>
+    👥 Visitantes únicos:
+    <strong id="visitantesUnicos">0</strong>
+  </p>
+
+  <p>
+    👀 Visitas totales:
+    <strong id="visitasTotales">0</strong>
+  </p>
+</div>
  <button class="add-art-button" onclick="mostrarFormularioObra()">
   <span>＋</span>
   Añadir nueva obra
@@ -2222,6 +2235,11 @@ function cancelarEdicionObra(id) {
   }
 
   console.log("Estadísticas de visitas:", data);
+      document.getElementById("visitantesUnicos").textContent =
+    data.visitantes_unicos;
+
+  document.getElementById("visitasTotales").textContent =
+    data.visitas_totales;
 }
   async function cargarObrasAdmin() {
   const { data, error } = await supabaseClient
