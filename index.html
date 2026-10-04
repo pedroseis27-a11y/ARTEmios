@@ -2932,7 +2932,8 @@ if (fotoBancoSeleccionada) {
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-zA-Z0-9._-]/g, "_");
-
+console.log("FOTO BANCO:", fotoBancoSeleccionada);
+console.log("RUTA QUE SE INTENTA COPIAR:", fotoBancoSeleccionada.storage_path);
   const { error: copyError } =
     await supabaseClient
       .storage
