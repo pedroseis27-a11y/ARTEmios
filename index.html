@@ -1336,7 +1336,35 @@
   </button>
 
 </div>
+  
+<button class="add-art-button" onclick="abrirBancoPrints()">
+  <span>🖼️</span>
+  Banco de prints
+</button>
 
+<div id="bancoPrintsPanel" style="display: none;">
+
+  <h3>🖼️ Banco de prints</h3>
+
+  <p>
+    Guarda aquí las imágenes que todavía no quieras publicar como prints.
+  </p>
+
+  <input
+    type="file"
+    id="bancoPrintsInput"
+    accept="image/*"
+    multiple
+    onchange="subirPrintsAlBanco(this)"
+  >
+
+  <div id="bancoPrintsGrid"></div>
+
+  <button onclick="cerrarBancoPrints()">
+    Cerrar banco de prints
+  </button>
+
+</div>
 <div id="formularioObra" style="display: none;">
 
   <h3>Nueva obra</h3>
@@ -2564,6 +2592,9 @@ function cerrarRecortador() {
 function abrirBancoFotos() {
   document.getElementById("bancoFotosPanel").style.display = "block";
   cargarBancoFotos();
+}
+  function abrirBancoPrints() {
+  document.getElementById("bancoPrintsPanel").style.display = "block";
 }
 
 function cerrarBancoFotos() {
