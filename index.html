@@ -2941,27 +2941,46 @@ console.log("RUTA QUE SE INTENTA COPIAR:", fotoBancoSeleccionada.storage_path);
     .from("obras")
     .download(fotoBancoSeleccionada.storage_path)
 );
-  const { error: copyError } =
-    await supabaseClient
-      .storage
-      .from("obras")
-     .copy(
-  "obras/" + fotoBancoSeleccionada.storage_path,
-  nombreArchivo
-);
+const { data: imagenBanco, error: downloadError } =
+  await supabaseClient
+    .storage
+    .from("obras")
+    .download(fotoBancoSeleccionada.storage_path);
 
-  if (copyError) {
-    console.error(
-      "Error copiando foto del banco:",
-      copyError
+if (downloadError) {
+  console.error(
+    "Error descargando foto del banco:",
+    downloadError
+  );
+
+  alert(
+    "❌ No se ha podido preparar la foto del banco"
+  );
+
+  return;
+}
+
+const { error: uploadError } =
+  await supabaseClient
+    .storage
+    .from("obras")
+    .upload(
+      nombreArchivo,
+      imagenBanco
     );
 
-    alert(
-      "❌ No se ha podido preparar la foto del banco"
-    );
+if (uploadError) {
+  console.error(
+    "Error subiendo copia de la foto:",
+    uploadError
+  );
 
-    return;
-  }
+  alert(
+    "❌ No se ha podido preparar la foto del banco"
+  );
+
+  return;
+}
 
   const { data: urlData } =
     supabaseClient
