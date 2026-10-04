@@ -1649,6 +1649,27 @@ const supabaseClient  = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+  // Registrar visita
+async function registrarVisita() {
+  let visitanteId = localStorage.getItem("artemiosVisitanteId");
+
+  if (!visitanteId) {
+    visitanteId = crypto.randomUUID();
+    localStorage.setItem("artemiosVisitanteId", visitanteId);
+  }
+
+  const { error } = await supabaseClient
+    .from("visitas")
+    .insert({
+      visitante_id: visitanteId
+    });
+
+  if (error) {
+    console.error("Error registrando visita:", error);
+  }
+}
+
+registrarVisita();
   async function comprobarSupabase() {
   const { data, error } = await supabaseClient
     .from("obras")
