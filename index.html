@@ -1442,6 +1442,7 @@
 
 </div>
   <div id="listaObrasAdmin"></div>
+  <div id="listaPrintsAdmin"></div>
   <div id="formularioEditarObra" style="display: none;">
 
   <h3>✏️ Editar obra</h3>
@@ -2425,9 +2426,78 @@ item.addEventListener(
     lista.appendChild(item);
   });
 }
- function abrirAdmin() {
+  async function cargarPrintsAdmin() {
+
+  const { data, error } = await supabaseClient
+    .from("prints")
+    .select("*")
+    .order("orden", { ascending: true });
+
+  if (error) {
+    console.error("Error cargando prints para administrar:", error);
+    return;
+  }
+
+  const lista = document.getElementById("listaPrintsAdmin");
+
+  if (!lista) return;
+
+  lista.innerHTML = "";
+
+  data.forEach((print) => {
+
+    const item = document.createElement("div");
+
+    item.className = "admin-obra";
+    item.dataset.id = print.id;
+
+    item.innerHTML = `
+      <div class="admin-obra-header">
+
+        <div class="admin-obra-info">
+
+          <img
+            src="${print.imagen}"
+            alt="${print.nombre}"
+            class="admin-obra-thumb"
+          >
+
+          <div>
+            <strong>${print.nombre}</strong>
+            <span>${print.precio} € · Stock: ${print.stock}</span>
+          </div>
+
+        </div>
+
+        <div class="admin-obra-actions">
+
+          <button
+            class="edit-btn"
+            onclick="editarPrint(${print.id})"
+          >
+            ✏️ Editar
+          </button>
+
+          <button
+            class="delete-btn"
+            onclick="eliminarPrint(${print.id})"
+          >
+            🗑️ Eliminar
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+    lista.appendChild(item);
+
+  });
+}
+function abrirAdmin() {
   document.getElementById("adminModal").classList.add("open");
   cargarObrasAdmin();
+  cargarPrintsAdmin();
   cargarEstadisticasVisitas();
 }
 function cerrarAdmin() {
