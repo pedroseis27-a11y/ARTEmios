@@ -1300,14 +1300,49 @@
     <strong id="visitasTotales">0</strong>
   </p>
 </div>
- <button class="add-art-button" onclick="mostrarFormularioObra()">
-  <span>＋</span>
-  Añadir nueva obra
-</button>
+<div style="display: flex; gap: 10px; margin-bottom: 20px;">
+
+  <button class="add-art-button" onclick="mostrarGestionObras()">
+    🎨 Obras
+  </button>
+
+  <button class="add-art-button" onclick="mostrarGestionPrints()">
+    🖼️ Prints
+  </button>
+
+</div>
+
+<div id="gestionObras" style="display: none;">
+
+  <h3>🎨 Gestión de obras</h3>
+
+  <button class="add-art-button" onclick="mostrarFormularioObra()">
+    <span>＋</span>
+    Añadir nueva obra
+  </button>
+
+  <button class="add-art-button" onclick="abrirBancoFotos()">
+    <span>📸</span>
+    Banco de fotos
+  </button>
+
+</div>
+
+<div id="gestionPrints" style="display: none;">
+
+  <h3>🖼️ Gestión de Prints</h3>
+
   <button class="add-art-button" onclick="mostrarFormularioPrint()">
-  <span>＋</span>
-  Añadir nuevo print
-</button>
+    <span>＋</span>
+    Añadir nuevo print
+  </button>
+
+  <button class="add-art-button" onclick="abrirBancoPrints()">
+    <span>🖼️</span>
+    Banco de prints
+  </button>
+
+</div>
   <button class="add-art-button" onclick="abrirBancoFotos()">
   <span>📸</span>
   Banco de fotos
@@ -1441,9 +1476,9 @@
   </button>
 
 </div>
-  <h3>🖼️ Prints</h3>
-  <div id="listaObrasAdmin"></div>
-  <div id="listaPrintsAdmin"></div>
+<div id="listaObrasAdmin"></div>
+
+<div id="listaPrintsAdmin"></div>
   <div id="formularioEditarObra" style="display: none;">
 
   <h3>✏️ Editar obra</h3>
@@ -2742,6 +2777,19 @@ const panel = document.getElementById("bancoFotosPanel");
 panel.style.display = "block";
 
 cargarBancoFotosParaEditar();
+}
+  function mostrarGestionObras() {
+
+  document.getElementById("gestionObras").style.display = "block";
+  document.getElementById("gestionPrints").style.display = "none";
+
+}
+
+function mostrarGestionPrints() {
+
+  document.getElementById("gestionObras").style.display = "none";
+  document.getElementById("gestionPrints").style.display = "block";
+
 }
  function mostrarFormularioObra() {
   document.getElementById("formularioObra").style.display = "block";
