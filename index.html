@@ -2427,7 +2427,7 @@ item.addEventListener(
     lista.appendChild(item);
   });
 }
-  async function cargarPrintsAdmin() {
+async function cargarPrintsAdmin() {
 
   const { data, error } = await supabaseClient
     .from("prints")
@@ -2489,11 +2489,241 @@ item.addEventListener(
         </div>
 
       </div>
+
+      <div
+        id="editar-print-${print.id}"
+        class="admin-inline-edit"
+        style="display: none;"
+      >
+
+        <h3>✏️ Editar print</h3>
+
+        <label>Nombre</label>
+
+        <input
+          type="text"
+          id="editarPrintNombre-${print.id}"
+          placeholder="Nombre del print"
+        >
+
+        <label>Descripción</label>
+
+        <textarea
+          id="editarPrintDescripcion-${print.id}"
+          placeholder="Descripción"
+        ></textarea>
+
+        <label>Precio (€)</label>
+
+        <input
+          type="number"
+          id="editarPrintPrecio-${print.id}"
+          placeholder="Precio"
+        >
+
+        <label>Cambiar imagen</label>
+
+        <input
+          type="file"
+          id="editarPrintImagen-${print.id}"
+          accept="image/*"
+          onchange="abrirRecortador(this)"
+        >
+
+        <label>Stock</label>
+
+        <input
+          type="number"
+          id="editarPrintStock-${print.id}"
+          placeholder="Stock"
+        >
+
+        <button
+          class="save-btn"
+          onclick="guardarEdicionPrint(${print.id})"
+        >
+          💾 Guardar cambios
+        </button>
+
+        <button
+          class="cancel-btn"
+          onclick="cancelarEdicionPrint(${print.id})"
+        >
+          ❌ Cancelar
+        </button>
+
+      </div>
     `;
 
     lista.appendChild(item);
 
   });
+}
+  function editarPrint(id) {
+
+  const formulario =
+    document.getElementById(`editar-print-${id}`);
+
+  if (!formulario) return;
+
+  formulario.style.display = "block";
+
+  const cargarPrint = async () => {
+
+    const { data, error } = await supabaseClient
+      .from("prints")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error("Error cargando print:", error);
+      return;
+    }
+
+    document.getElementById(`editarPrintNombre-${id}`).value =
+      data.nombre || "";
+
+    document.getElementById(`editarPrintDescripcion-${id}`).value =
+      data.descripcion || "";
+
+    document.getElementById(`editarPrintPrecio-${id}`).value =
+      data.precio || "";
+
+    document.getElementById(`editarPrintStock-${id}`).value =
+      data.stock ?? 1;
+
+    window.printoEditando = data;
+    window.imagenRecortadaPrint = null;
+  };
+
+  cargarPrint();
+}
+
+function cancelarEdicionPrint(id) {
+
+  const formulario =
+    document.getElementById(`editar-print-${id}`);
+
+  if (formulario) {
+    formulario.style.display = "none";
+  }
+
+  window.printoEditando = null;
+  window.imagenRecortadaPrint = null;
+}
+
+async function guardarEdicionPrint(id) {
+
+  const nombre =
+    document.getElementById(`editarPrintNombre-${id}`).value;
+
+  const descripcion =
+    document.getElementById(`editarPrintDescripcion-${id}`).value;
+
+  const precio =
+    document.getElementById(`editarPrintPrecio-${id}`).value;
+
+  const stock =
+    document.getElementById(`editarPrintStock-${id}`).value;
+
+  let imagen = window.printoEditando?.imagen || null;
+
+  if (window.imagenRecortadaPrint) {
+
+    const nombreArchivo =
+      Date.now() +
+      "_" +
+      window.imagenRecortadaPrint.name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+    const { error: uploadError } =
+      await supabaseClient
+        .storage
+        .from("obras")
+        .upload(
+          nombreArchivo,
+          window.imagenRecortadaPrint
+        );
+
+    if (uploadError) {
+      console.error(
+        "Error subiendo nueva imagen:",
+        uploadError
+      );
+
+      alert("❌ No se ha podido subir la nueva imagen");
+      return;
+    }
+
+    const { data: urlData } =
+      supabaseClient
+        .storage
+        .from("obras")
+        .getPublicUrl(nombreArchivo);
+
+    imagen = urlData.publicUrl;
+  }
+
+  const { error } =
+    await supabaseClient
+      .from("prints")
+      .update({
+        nombre: nombre,
+        descripcion: descripcion,
+        precio: precio,
+        imagen: imagen,
+        stock: stock
+      })
+      .eq("id", id);
+
+  if (error) {
+    console.error(
+      "Error guardando edición del print:",
+      error
+    );
+
+    alert("❌ No se han podido guardar los cambios");
+    return;
+  }
+
+  alert("✅ Print actualizado correctamente");
+
+  window.printoEditando = null;
+  window.imagenRecortadaPrint = null;
+
+  cargarPrintsAdmin();
+}
+
+async function eliminarPrint(id) {
+
+  const confirmar = confirm(
+    "¿Seguro que quieres eliminar este print?"
+  );
+
+  if (!confirmar) return;
+
+  const { error } =
+    await supabaseClient
+      .from("prints")
+      .delete()
+      .eq("id", id);
+
+  if (error) {
+    console.error(
+      "Error eliminando print:",
+      error
+    );
+
+    alert("❌ No se ha podido eliminar el print");
+    return;
+  }
+
+  alert("🗑️ Print eliminado correctamente");
+
+  cargarPrintsAdmin();
 }
 function abrirAdmin() {
   document.getElementById("adminModal").classList.add("open");
